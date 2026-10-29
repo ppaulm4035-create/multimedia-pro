@@ -2,21 +2,27 @@ const STATE_KEY = 'worship_presenter_state';
 const SONGS_KEY = 'worship_presenter_songs';
 
 let state = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-  text: '',
+  mainText: '',
+  bandText: '',
   mode: 'SHOW'
 };
 
 let songs = JSON.parse(localStorage.getItem(SONGS_KEY)) || [];
+let currentSongParts = []; // Temporary parts for building a song
 
 // DOM Elements
-const activeLyricsInput = document.getElementById('activeLyricsInput');
+const activeMainInput = document.getElementById('activeMainInput');
+const activeBandInput = document.getElementById('activeBandInput');
 const mainPreviewText = document.querySelector('#mainPreview .preview-text');
 const mobilePreviewText = document.querySelector('#mobilePreview .preview-text');
 const songTitleInput = document.getElementById('songTitleInput');
-const songLyricsInput = document.getElementById('songLyricsInput');
+const partSelect = document.getElementById('partSelect');
+const partLyricsInput = document.getElementById('partLyricsInput');
+const partBandInput = document.getElementById('partBandInput');
+const addPartBtn = document.getElementById('addPartBtn');
 const saveSongBtn = document.getElementById('saveSongBtn');
 const songList = document.getElementById('songList');
-const slideButtons = document.getElementById('slideButtons');
+const songPartTriggers = document.getElementById('songPartTriggers');
 
 function broadcastState(newState) {
   state = { ...state, ...newState };
@@ -27,43 +33,74 @@ function broadcastState(newState) {
 function renderControllerUI() {
   if (!mainPreviewText || !mobilePreviewText) return;
 
-  let displayContent = state.text;
+  let mainDisplay = state.mainText;
+  let bandDisplay = state.bandText;
+
   if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
-    displayContent = '';
+    mainDisplay = '';
+    bandDisplay = '';
   }
 
-  mainPreviewText.textContent = displayContent;
-  mobilePreviewText.textContent = displayContent;
+  mainPreviewText.textContent = mainDisplay;
+  mobilePreviewText.textContent = bandDisplay;
 }
 
-if (activeLyricsInput) {
-  activeLyricsInput.value = state.text;
+if (activeMainInput && activeBandInput) {
+  activeMainInput.value = state.mainText;
+  activeBandInput.value = state.bandText;
 
-  // Edit Button - focus input
+  // Live input sync
+  activeMainInput.addEventListener('input', (e) => {
+    broadcastState({ mainText: e.target.value, mode: 'SHOW' });
+  });
+
+  activeBandInput.addEventListener('input', (e) => {
+    broadcastState({ bandText: e.target.value, mode: 'SHOW' });
+  });
+
+  // Edit Mode Focus
   document.getElementById('btnEdit').addEventListener('click', () => {
-    activeLyricsInput.focus();
+    activeMainInput.focus();
   });
 
-  // Show Live Button
   document.getElementById('btnShow').addEventListener('click', () => {
-    broadcastState({ text: activeLyricsInput.value, mode: 'SHOW' });
+    broadcastState({ 
+      mainText: activeMainInput.value, 
+      bandText: activeBandInput.value, 
+      mode: 'SHOW' 
+    });
   });
 
-  // Clear & Black Buttons
   document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
   document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
 
-  // Save Template
+  // Add Part to Current Builder
+  addPartBtn.addEventListener('click', () => {
+    const type = partSelect.value;
+    const lyrics = partLyricsInput.value.trim();
+    const bandNotes = partBandInput.value.trim();
+
+    if (!lyrics) return alert('Lagyan ng lyrics ang part na ito!');
+
+    currentSongParts.push({ type, lyrics, bandNotes });
+    partLyricsInput.value = '';
+    partBandInput.value = '';
+    alert(`Naidagdag ang ${type}! Pindutin ang 'Save Full Song' kapag tapos na.`);
+    renderTriggers(currentSongParts);
+  });
+
+  // Save Full Song
   saveSongBtn.addEventListener('click', () => {
     const title = songTitleInput.value.trim();
-    const lyrics = songLyricsInput.value.trim();
-    if (!title || !lyrics) return alert('Lagyan ng Title at Content!');
+    if (!title || currentSongParts.length === 0) return alert('Maglagay ng Song Title at kahit isang Part!');
 
-    songs.push({ id: Date.now(), title, lyrics });
+    songs.push({ id: Date.now(), title, parts: [...currentSongParts] });
     localStorage.setItem(SONGS_KEY, JSON.stringify(songs));
     songTitleInput.value = '';
-    songLyricsInput.value = '';
+    currentSongParts = [];
+    songPartTriggers.innerHTML = '';
     renderSongList();
+    alert('Matagumpay na na-save ang kanta!');
   });
 
   function renderSongList() {
@@ -72,44 +109,34 @@ if (activeLyricsInput) {
       const item = document.createElement('div');
       item.className = 'song-item';
       item.textContent = song.title;
-      item.addEventListener('click', () => loadSongToController(song));
+      item.addEventListener('click', () => loadSongToTriggers(song));
       songList.appendChild(item);
     });
   }
 
-  function loadSongToController(song) {
-    slideButtons.innerHTML = '';
-    const paragraphs = song.lyrics.split('\n\n');
+  function loadSongToTriggers(song) {
+    renderTriggers(song.parts);
+  }
 
-    paragraphs.forEach((para) => {
+  function renderTriggers(parts) {
+    songPartTriggers.innerHTML = '';
+    parts.forEach(part => {
       const btn = document.createElement('button');
-      btn.className = 'slide-btn';
-      btn.textContent = para;
+      btn.className = 'part-btn';
+      btn.textContent = part.type;
       btn.addEventListener('click', () => {
-        activeLyricsInput.value = para;
-        broadcastState({ text: para, mode: 'SHOW' });
+        activeMainInput.value = part.lyrics;
+        activeBandInput.value = part.bandNotes || part.lyrics; // Fallback to lyrics if no specific band notes
+        broadcastState({ 
+          mainText: activeMainInput.value, 
+          bandText: activeBandInput.value, 
+          mode: 'SHOW' 
+        });
       });
-      slideButtons.appendChild(btn);
+      songPartTriggers.appendChild(btn);
     });
   }
 
   renderSongList();
   renderControllerUI();
-}
-
-// Display / Band Screen Receiver
-const lyricsDisplay = document.getElementById('lyricsDisplay');
-if (lyricsDisplay) {
-  function updateScreen() {
-    const currentState = JSON.parse(localStorage.getItem(STATE_KEY)) || { text: '', mode: 'SHOW' };
-    if (currentState.mode === 'BLACK' || currentState.mode === 'CLEAR') {
-      lyricsDisplay.textContent = '';
-    } else {
-      lyricsDisplay.textContent = currentState.text;
-    }
-  }
-
-  updateScreen();
-  window.addEventListener('storage', updateScreen);
-  setInterval(updateScreen, 200);
 }
