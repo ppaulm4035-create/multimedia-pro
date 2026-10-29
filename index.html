@@ -3,38 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Church Presenter - Pro Controller</title>
+  <title>Church Presenter - Pro Studio</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-layout">
     
-    <!-- LEFT SIDE: Long Templates & Library -->
+    <!-- LEFT PANEL: Song Templates & Part Assigning -->
     <div class="left-panel">
-      <h3>Templates & Songs</h3>
+      <h3>Song Library</h3>
       <div class="song-form">
         <input type="text" id="songTitleInput" placeholder="Song Title...">
-        <textarea id="songLyricsInput" rows="5" placeholder="Paste full song / template lyrics here..."></textarea>
-        <button id="saveSongBtn" class="btn primary">Save Template</button>
+        
+        <label class="section-label">Add Part Content:</label>
+        <select id="partSelect">
+          <option value="INTRO">INTRO</option>
+          <option value="VERSE">VERSE</option>
+          <option value="CHORUS">CHORUS</option>
+          <option value="BRIDGE">BRIDGE</option>
+          <option value="REFRAIN">REFRAIN</option>
+          <option value="ADLIB">ADLIB</option>
+          <option value="OUTRO">OUTRO</option>
+        </select>
+        
+        <textarea id="partLyricsInput" rows="4" placeholder="Lyrics (Main Screen)"></textarea>
+        <textarea id="partBandInput" rows="3" placeholder="Band/CP Notes & Chords (Optional)"></textarea>
+        <button id="addPartBtn" class="btn primary">Add/Update Part</button>
+        <button id="saveSongBtn" class="btn success" style="margin-top: 5px;">Save Full Song</button>
       </div>
 
       <hr class="divider">
 
-      <h4>Saved Templates</h4>
+      <h4>Saved Songs</h4>
       <div id="songList" class="template-list"></div>
     </div>
 
-    <!-- CENTER PANEL: Edit Display + Control Buttons -->
+    <!-- CENTER PANEL: Edit Mode, Global Part Triggers & Editors -->
     <div class="center-panel">
       <div class="panel-header">
-        <h2>Live Editor</h2>
+        <h2>Studio Live Controller</h2>
         <div class="quick-links">
-          <a href="display.html" target="_blank" class="btn link">Open Main Display</a>
-          <a href="band.html" target="_blank" class="btn link">Open CP/Band View</a>
+          <a href="display.html" target="_blank" class="btn link">Main Display</a>
+          <a href="band.html" target="_blank" class="btn link">Band/CP View</a>
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
+      <!-- Action Bar -->
       <div class="action-bar">
         <button id="btnShow" class="btn success">SHOW LIVE</button>
         <button id="btnEdit" class="btn primary">EDIT MODE</button>
@@ -42,14 +56,22 @@
         <button id="btnBlack" class="btn danger">BLACK SCREEN</button>
       </div>
 
-      <!-- Interactive Slide Buttons (Quick Pick) -->
-      <label class="section-label">Quick Select Slide:</label>
-      <div id="slideButtons" class="slide-grid"></div>
+      <!-- Synchronized Song Part Triggers (INTRO, VERSE, CHORUS, etc.) -->
+      <label class="section-label">Song Parts (Synced Trigger):</label>
+      <div id="songPartTriggers" class="parts-grid">
+        <!-- Dynamic part buttons will show here -->
+      </div>
 
-      <!-- Central Edit Box -->
-      <div class="edit-box-container">
-        <label class="section-label">Edit Display Text:</label>
-        <textarea id="activeLyricsInput" rows="8" placeholder="Type or edit text here... Click 'SHOW LIVE' to push to screens."></textarea>
+      <!-- Dual Text Editors for Active Part -->
+      <div class="editors-grid">
+        <div class="editor-box">
+          <label class="section-label">Main Projector Editor:</label>
+          <textarea id="activeMainInput" rows="5" placeholder="Projector text..."></textarea>
+        </div>
+        <div class="editor-box">
+          <label class="section-label">Band / CP Editor (Chords/Notes):</label>
+          <textarea id="activeBandInput" rows="5" placeholder="Band screen text with chords..."></textarea>
+        </div>
       </div>
     </div>
 
