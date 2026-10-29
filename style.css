@@ -1,0 +1,70 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin: 15px 0;
+}
+
+.links a {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Display Screen Style */
+body.display-screen {
+  background-color: #000;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 5vw;
+  padding: 20px;
+}
+
+/* Band Screen Style */
+body.band-screen {
+  background-color: #111;
+  color: #00ffcc;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 4vw;
+  font-family: monospace;
+  padding: 20px;
+}
+
+.band-screen .header {
+  font-size: 1.5rem;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+#lyricsDisplay {
+  white-space: pre-wrap;
+}
