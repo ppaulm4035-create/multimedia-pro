@@ -3,18 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Church Presenter - Controller</title>
+  <title>Church Presenter - Pro Controller</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Worship Presenter - Controller</h2>
-    <textarea id="lyricsInput" rows="12" placeholder="Type or paste lyrics here..."></textarea>
-    <div class="links">
-      <a href="display.html" target="_blank">Open Display View</a> | 
-      <a href="band.html" target="_blank">Open Band View</a>
+  <div class="app-layout">
+    
+    <!-- LEFT SIDE: Long Templates & Library -->
+    <div class="left-panel">
+      <h3>Templates & Songs</h3>
+      <div class="song-form">
+        <input type="text" id="songTitleInput" placeholder="Song Title...">
+        <textarea id="songLyricsInput" rows="5" placeholder="Paste full song / template lyrics here..."></textarea>
+        <button id="saveSongBtn" class="btn primary">Save Template</button>
+      </div>
+
+      <hr class="divider">
+
+      <h4>Saved Templates</h4>
+      <div id="songList" class="template-list"></div>
     </div>
+
+    <!-- CENTER PANEL: Edit Display + Control Buttons -->
+    <div class="center-panel">
+      <div class="panel-header">
+        <h2>Live Editor</h2>
+        <div class="quick-links">
+          <a href="display.html" target="_blank" class="btn link">Open Main Display</a>
+          <a href="band.html" target="_blank" class="btn link">Open CP/Band View</a>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="action-bar">
+        <button id="btnShow" class="btn success">SHOW LIVE</button>
+        <button id="btnEdit" class="btn primary">EDIT MODE</button>
+        <button id="btnClear" class="btn warning">CLEAR TEXT</button>
+        <button id="btnBlack" class="btn danger">BLACK SCREEN</button>
+      </div>
+
+      <!-- Interactive Slide Buttons (Quick Pick) -->
+      <label class="section-label">Quick Select Slide:</label>
+      <div id="slideButtons" class="slide-grid"></div>
+
+      <!-- Central Edit Box -->
+      <div class="edit-box-container">
+        <label class="section-label">Edit Display Text:</label>
+        <textarea id="activeLyricsInput" rows="8" placeholder="Type or edit text here... Click 'SHOW LIVE' to push to screens."></textarea>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Dual Monitor Previews -->
+    <div class="right-panel">
+      <!-- Top Right: Main Landscape Monitor -->
+      <div class="monitor-card">
+        <div class="monitor-title">Main Monitor (Projector)</div>
+        <div id="mainPreview" class="preview-screen landscape">
+          <div class="preview-text"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Right: Portrait Mobile/CP Monitor -->
+      <div class="monitor-card">
+        <div class="monitor-title">Portrait CP Monitor</div>
+        <div id="mobilePreview" class="preview-screen portrait">
+          <div class="preview-text"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>
