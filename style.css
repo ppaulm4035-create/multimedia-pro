@@ -145,7 +145,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Live Monitors Panel */
+/* Right Column: Clean Live Monitors Panel */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -153,17 +153,10 @@ body {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
     overflow-y: auto;
-}
-
-.preview-card {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-    color: #9ca3af;
-    flex: 1; /* Binibigyan ng pantay na hatol sa espasyo */
 }
 
 /* Landscape Live Monitor Box */
@@ -192,13 +185,13 @@ body {
     overflow: hidden;
 }
 
-/* Portrait Monitor (Fixed height matching the available column room, 9:16 ratio) */
+/* Portrait Monitor (Maximum expanded height using 9:16 aspect ratio) */
 .canvas-box.portrait-box-small {
     border-color: #06b6d4;
     padding: 12px;
     aspect-ratio: 9 / 16;
-    height: 100%; /* Pinapunan na ang buong vertical room */
-    max-height: 42vh; /* Mas pinalaki nang konti ang height limit para lumitaw ang tamang sukat */
+    height: 100%; /* Puno ang buong available vertical space */
+    max-height: 48vh; /* Mas pinalaki pa nang husto para masulit ang bakanteng espasyo */
     width: auto;
     margin: 0 auto;
 }
