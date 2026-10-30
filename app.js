@@ -1,20 +1,17 @@
 const STATE_KEY = 'multimedia_app_state';
 const TEMPLATES_KEY = 'multimedia_app_templates';
 
-// App state management
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
     activeSlideIndex: 0,
-    status: 'SHOW' // 'SHOW', 'CLEAR', 'BLACK'
+    status: 'SHOW'
 };
 
-// Default template slides
 let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
-    { id: 1, title: 'Welcome Slide', content: 'Welcome to the Presentation' },
-    { id: 2, title: 'Slide Two', content: 'Here is your second point or lyric.' },
-    { id: 3, title: 'Conclusion', content: 'Thank you for watching!' }
+    { id: 1, title: 'Slide 1', content: 'Welcome to the Presentation' },
+    { id: 2, title: 'Slide 2', content: 'Here is your second point or lyric.' },
+    { id: 3, title: 'Slide 3', content: 'Thank you for watching!' }
 ];
 
-// DOM Elements
 const templateBar = document.getElementById('templateBar');
 const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
@@ -22,7 +19,6 @@ const btnShow = document.getElementById('btnShow');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
 
-// Helper to convert HTML editor content safely to plain text / newlines
 function getEditorContent() {
     if (!centerEditor) return '';
     return centerEditor.innerHTML
@@ -38,29 +34,27 @@ function setEditorContent(text) {
     centerEditor.innerHTML = text.replace(/\n/g, '<br>');
 }
 
-// Update UI and Live Previews
 function updateApp() {
-    // Save current editor text to active template
     if (templates[appState.activeSlideIndex]) {
         templates[appState.activeSlideIndex].content = getEditorContent();
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    // Determine output based on presentation status
     let displayContent = templates[appState.activeSlideIndex]?.content || '';
     if (appState.status === 'CLEAR' || appState.status === 'BLACK') {
         displayContent = '';
     }
 
-    // Render onto the Live Monitor preview box
     if (livePreviewBox) {
         livePreviewBox.textContent = displayContent;
     }
 
+    // Update left thumbnail preview text instantly
+    renderTemplates();
+
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
-// Render the left-side template / slide list
 function renderTemplates() {
     if (!templateBar) return;
     templateBar.innerHTML = '';
@@ -68,13 +62,14 @@ function renderTemplates() {
     templates.forEach((tpl, index) => {
         const card = document.createElement('div');
         card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
-        card.textContent = tpl.title;
+        
+        // Show slide title and a mini preview of the content inside the thumbnail
+        card.innerHTML = `<strong>Slide ${index + 1}</strong><div style="font-size: 0.5rem; opacity: 0.8; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${tpl.content}</div>`;
 
         card.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
             setEditorContent(tpl.content);
-            renderTemplates();
             updateApp();
         });
 
@@ -82,14 +77,12 @@ function renderTemplates() {
     });
 }
 
-// Event Listeners for live typing
 if (centerEditor) {
     centerEditor.addEventListener('input', () => {
         updateApp();
     });
 }
 
-// Toolbar Action Controls
 btnShow?.addEventListener('click', () => {
     appState.status = 'SHOW';
     updateApp();
@@ -105,7 +98,6 @@ btnBlack?.addEventListener('click', () => {
     updateApp();
 });
 
-// Initialization
 function init() {
     if (templates.length > 0) {
         setEditorContent(templates[appState.activeSlideIndex].content);
