@@ -1,4 +1,52 @@
-/* Update the main workspace to be a 3-column row layout */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+    gap: 16px;
+}
+
+.top-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn.primary { background: #4f46e5; color: white; }
+.btn.warning { background: #d97706; color: white; }
+.btn.dark { background: #374151; color: white; }
+.btn.secondary { background: #0d9488; color: white; }
+
 .workspace {
     display: flex;
     flex: 1;
@@ -6,7 +54,6 @@
     min-height: 0;
 }
 
-/* 1. Left Sidebar: Templates */
 .templates-sidebar {
     flex: 1.2;
     background: #1e1e1e;
@@ -15,7 +62,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 100%;
 }
 
 .template-bar-vertical {
@@ -23,32 +69,8 @@
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
-    padding-right: 4px;
 }
 
-/* 2. Center: Editing Screen */
-.editor-section {
-    flex: 3;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* 3. Right Sidebar: Previews */
-.preview-panel {
-    flex: 1.2;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Vertical card styling for the left template panel */
 .slide-thumb {
     width: 100%;
     min-height: 60px;
@@ -63,10 +85,91 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    transition: border-color 0.2s, background 0.2s;
 }
 
 .slide-thumb:hover {
     border-color: #4f46e5;
     background: #374151;
+}
+
+.editor-section {
+    flex: 3;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mode-label {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    font-weight: bold;
+}
+
+.canvas-box {
+    flex: 1;
+    background: #000;
+    border: 2px solid #374151;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.canvas-box.landscape {
+    aspect-ratio: 16 / 9;
+    max-height: 60vh;
+}
+
+.canvas-box.portrait {
+    aspect-ratio: 9 / 16;
+    max-height: 60vh;
+    margin: 0 auto;
+}
+
+.editor-input {
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 1.8rem;
+    text-align: center;
+    outline: none;
+    white-space: pre-wrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-panel {
+    flex: 1.2;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.preview-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.preview-box {
+    background: #000;
+    border: 1px solid #374151;
+    border-radius: 4px;
+    height: 80px;
+    padding: 8px;
+    font-size: 0.75rem;
+    color: white;
+    overflow: hidden;
+    white-space: pre-wrap;
 }
