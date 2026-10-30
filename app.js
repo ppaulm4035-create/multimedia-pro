@@ -24,7 +24,6 @@ const btnSwitchView = document.getElementById('btnSwitchView');
 
 const mainLivePreview = document.getElementById('mainLivePreview');
 const cpLivePreview = document.getElementById('cpLivePreview');
-const leftCpPreview = document.getElementById('leftCpPreview');
 const templateBar = document.getElementById('templateBar');
 const lyricsDisplay = document.getElementById('lyricsDisplay');
 
@@ -44,6 +43,7 @@ function renderUI() {
 
   if (!centerEditorInput) return;
 
+  // Sync editor input content back to state depending on active mode
   if (activeEditingMode === 'MAIN') {
     state.mainText = centerEditorInput.textContent;
   } else {
@@ -53,16 +53,14 @@ function renderUI() {
   if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
     if (mainLivePreview) mainLivePreview.textContent = '';
     if (cpLivePreview) cpLivePreview.textContent = '';
-    if (leftCpPreview) leftCpPreview.textContent = '';
     return;
   }
 
   if (mainLivePreview) mainLivePreview.textContent = state.mainText;
   if (cpLivePreview) cpLivePreview.textContent = state.bandText;
-  if (leftCpPreview) leftCpPreview.textContent = state.bandText;
 }
 
-// Switch between Main (Landscape) and CP (Portrait)
+// Switch between Main (Landscape) and CP (Portrait) views
 btnSwitchView.addEventListener('click', () => {
   if (activeEditingMode === 'MAIN') {
     activeEditingMode = 'CP';
