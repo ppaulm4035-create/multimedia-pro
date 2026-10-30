@@ -9,9 +9,9 @@
 <body>
   <div class="app-layout">
     
-    <!-- LEFT PANEL: Song Library & Web Lyric Search -->
+    <!-- LEFT PANEL: Song Library & Visual Template Builder -->
     <div class="left-panel">
-      <h3>Song Library & Search</h3>
+      <h3>Song Library & Templates</h3>
       
       <!-- Web Lyric Search Section -->
       <div class="search-box-section">
@@ -25,7 +25,7 @@
 
       <hr class="divider">
 
-      <!-- Manual Song Builder -->
+      <!-- Visual Template Creator -->
       <div class="song-form">
         <input type="text" id="songTitleInput" placeholder="Song Title...">
         <select id="partSelect">
@@ -37,9 +37,20 @@
           <option value="ADLIB">ADLIB</option>
           <option value="OUTRO">OUTRO</option>
         </select>
-        <textarea id="partLyricsInput" rows="3" placeholder="Lyrics (Main Screen)"></textarea>
-        <textarea id="partBandInput" rows="2" placeholder="Band/CP Chords (Optional)"></textarea>
-        <button id="addPartBtn" class="btn primary">Add Part</button>
+        
+        <label class="section-label">Template Main Lyrics Preview:</label>
+        <div id="templateMainPreview" class="preview-screen landscape mini-preview">
+          <div class="preview-text">Drafting main lyrics...</div>
+        </div>
+        <textarea id="partLyricsInput" rows="2" placeholder="Type main lyrics here..."></textarea>
+        
+        <label class="section-label" style="margin-top: 5px;">Template Band Chords Preview:</label>
+        <div id="templateBandPreview" class="preview-screen portrait mini-preview">
+          <div class="preview-text">Drafting band chords...</div>
+        </div>
+        <textarea id="partBandInput" rows="2" placeholder="Type band chords here..."></textarea>
+
+        <button id="addPartBtn" class="btn primary" style="margin-top: 5px;">Add Part to Song</button>
         <button id="saveSongBtn" class="btn success" style="margin-top: 5px;">Save Song</button>
       </div>
 
@@ -48,7 +59,7 @@
       <div id="songList" class="template-list"></div>
     </div>
 
-    <!-- CENTER PANEL: Studio Mode (Preview vs Program Live) -->
+    <!-- CENTER PANEL: Studio Mode & Visual Monitors -->
     <div class="center-panel">
       <div class="panel-header">
         <h2>Studio Controller</h2>
@@ -69,29 +80,43 @@
       <label class="section-label">Song Parts (Synced Trigger):</label>
       <div id="songPartTriggers" class="parts-grid"></div>
 
-      <!-- Dual Studio Editors: Preview (Workspace) vs Program (Live) -->
+      <!-- Dual Studio Visual Editors: Preview vs Program -->
       <div class="studio-editors-grid">
+        <!-- PREVIEW BUFFER SCREENS -->
         <div class="editor-column">
           <div class="editor-header preview-hdr">PREVIEW BUFFER (Edit here first)</div>
-          <label class="section-label">Main Projector Preview:</label>
-          <textarea id="previewMainInput" rows="4" placeholder="Drafting main lyrics..."></textarea>
           
-          <label class="section-label" style="margin-top: 10px;">Band / CP Preview:</label>
-          <textarea id="previewBandInput" rows="4" placeholder="Drafting band chords..."></textarea>
+          <label class="section-label">Main Projector Preview:</label>
+          <div id="previewMainScreen" class="preview-screen landscape">
+            <div class="preview-text">Drafting main lyrics...</div>
+          </div>
+          <textarea id="previewMainInput" rows="2" placeholder="Type/Edit main lyrics here..."></textarea>
+          
+          <label class="section-label" style="margin-top: 5px;">Band / CP Preview:</label>
+          <div id="previewBandScreen" class="preview-screen portrait">
+            <div class="preview-text">Drafting band chords...</div>
+          </div>
+          <textarea id="previewBandInput" rows="2" placeholder="Type/Edit band chords here..."></textarea>
         </div>
 
+        <!-- PROGRAM LIVE SCREENS -->
         <div class="editor-column">
           <div class="editor-header live-hdr">PROGRAM LIVE (Currently on Screen)</div>
-          <label class="section-label">Active Main Output:</label>
-          <textarea id="liveMainDisplay" rows="4" readonly placeholder="Live projector output..."></textarea>
           
-          <label class="section-label" style="margin-top: 10px;">Active Band Output:</label>
-          <textarea id="liveBandDisplay" rows="4" readonly placeholder="Live band output..."></textarea>
+          <label class="section-label">Active Main Output:</label>
+          <div id="liveMainScreen" class="preview-screen landscape">
+            <div class="preview-text">Live projector output...</div>
+          </div>
+          
+          <label class="section-label" style="margin-top: 5px;">Active Band Output:</label>
+          <div id="liveBandScreen" class="preview-screen portrait">
+            <div class="preview-text">Live band output...</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL: Dual Monitor Previews -->
+    <!-- RIGHT PANEL: Full Reference Monitors -->
     <div class="right-panel">
       <div class="monitor-card">
         <div class="monitor-title">Main Monitor (Projector)</div>
