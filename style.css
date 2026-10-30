@@ -53,7 +53,7 @@ body {
     min-height: 0;
 }
 
-/* Left Sidebar: Slide Thumbnails */
+/* Left Sidebar: Templates */
 .templates-sidebar {
     flex: 1.2;
     background: #1e1e1e;
@@ -72,23 +72,24 @@ body {
     padding-right: 4px;
 }
 
+/* Thumbnail mirror container */
 .slide-thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
     background: #000;
     border: 2px solid #4b5563;
     border-radius: 6px;
-    padding: 12px;
-    font-size: 0.7rem;
-    color: #f3f4f6;
+    padding: 10px;
+    color: white;
+    font-size: 0.6rem;
+    overflow: hidden;
     cursor: pointer;
+    white-space: pre-wrap;
+    word-break: break-word;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    overflow: hidden;
-    word-break: break-word;
-    transition: all 0.2s;
 }
 
 .slide-thumb:hover {
@@ -100,7 +101,7 @@ body {
     box-shadow: 0 0 0 2px #4f46e5;
 }
 
-/* Center Column: Editor Screen */
+/* Center Column: Editor Screen (Main) */
 .editor-section {
     flex: 3;
     background: #1e1e1e;
@@ -144,7 +145,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Live Monitor Preview (Mirrored styling) */
+/* Right Column: Live Monitor Mirror */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -163,15 +164,21 @@ body {
     color: #9ca3af;
 }
 
-.preview-screen {
+.preview-canvas-box {
+    width: 100%;
     background: #000;
     border: 2px solid #374151;
     border-radius: 6px;
     aspect-ratio: 16 / 9;
-    padding: 24px; /* Matches canvas-box padding exactly */
-    font-size: 1.8rem; /* Matches editor-input font-size exactly */
-    color: white;
+    padding: 16px;
     overflow: hidden;
+}
+
+.preview-output {
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 1.1rem;
     white-space: pre-wrap;
     word-break: break-word;
     display: flex;
