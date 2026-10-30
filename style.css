@@ -174,10 +174,13 @@ body {
   border-color: #00ffcc;
 }
 
-/* Center Active Canvas Box (Larger but proportionally identical layout) */
+/* Center Active Canvas Box - Ginawa nating pareho ang proportion at sukat ng live view */
 .center-panel .screen-box.landscape {
-  height: 250px;
+  width: 100%;
+  max-width: 480px; /* Ibinaba natin ang lapad para maging eksaktong proportional box */
+  height: 270px;     /* 16:9 Landscape proportion */
   border-color: #0070f3;
+  margin: 0 auto;    /* Ipinwesto sa gitna */
 }
 
 .center-panel .screen-box.portrait {
@@ -186,7 +189,6 @@ body {
   border-color: #00ffcc;
   margin: 0 auto;
 }
-
 /* Identical Screen Content / Editor Engine */
 .screen-content {
   width: 100%;
