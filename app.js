@@ -1,42 +1,32 @@
 const STATE_KEY = 'worship_presenter_state';
-const SONGS_KEY = 'worship_presenter_songs';
+const TEMPLATES_KEY = 'worship_presenter_templates';
 
 let state = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-  mainText: '',
-  bandText: '',
+  mainText: 'Welcome to Worship',
+  bandText: '[Verse]\nC - G - Am - F',
   mode: 'SHOW'
 };
 
-let songs = JSON.parse(localStorage.getItem(SONGS_KEY)) || [];
-let currentSongParts = [];
+// Sample default templates if empty
+let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
+  { title: 'Verse 1 (Main)', type: 'main', text: 'Panginoon, kay tapat Mo' },
+  { title: 'Verse 1 (CP/Chords)', type: 'cp', text: '[Verse 1]\nC   G   Am   F\nPanginoon, kay tapat Mo' },
+  { title: 'Chorus (Main)', type: 'main', text: 'Purihin ang Pangalan Mo' },
+  { title: 'Chorus (CP/Chords)', type: 'chorus', text: '[Chorus]\nF   G   C   Am\nPurihin ang Pangalan Mo' }
+];
 
-// DOM Elements (Controller)
-const previewMainInput = document.getElementById('previewMainInput');
-const previewBandInput = document.getElementById('previewBandInput');
+let activeEditingMode = 'MAIN'; // 'MAIN' or 'CP'
 
-const previewMainScreenText = document.querySelector('#previewMainScreen .preview-text');
-const previewBandScreenText = document.querySelector('#previewBandScreen .preview-text');
-const liveMainScreenText = document.querySelector('#liveMainScreen .preview-text');
-const liveBandScreenText = document.querySelector('#liveBandScreen .preview-text');
+// DOM Elements
+const centerEditorInput = document.getElementById('centerEditorInput');
+const centerEditorScreen = document.getElementById('centerEditorScreen');
+const editingModeLabel = document.getElementById('editingModeLabel');
+const btnSwitchView = document.getElementById('btnSwitchView');
 
-const mainPreviewText = document.querySelector('#mainPreview .preview-text');
-const mobilePreviewText = document.querySelector('#mobilePreview .preview-text');
-
-const templateMainPreviewText = document.querySelector('#templateMainPreview .preview-text');
-const templateBandPreviewText = document.querySelector('#templateBandPreview .preview-text');
-
-const songTitleInput = document.getElementById('songTitleInput');
-const partSelect = document.getElementById('partSelect');
-const partLyricsInput = document.getElementById('partLyricsInput');
-const partBandInput = document.getElementById('partBandInput');
-const addPartBtn = document.getElementById('addPartBtn');
-const saveSongBtn = document.getElementById('saveSongBtn');
-const songList = document.getElementById('songList');
-const songPartTriggers = document.getElementById('songPartTriggers');
-
-const webSearchInput = document.getElementById('webSearchInput');
-const searchWebBtn = document.getElementById('searchWebBtn');
-const searchResults = document.getElementById('searchResults');
+const mainLivePreviewText = document.querySelector('#mainLivePreview .preview-text');
+const cpLivePreviewText = document.querySelector('#cpLivePreview .preview-text');
+const leftCpPreviewText = document.querySelector('#leftCpPreview .preview-text');
+const templateBar = document.getElementById('templateBar');
 const lyricsDisplay = document.getElementById('lyricsDisplay');
 
 function broadcastState(newState) {
@@ -56,150 +46,99 @@ function renderUI() {
     return;
   }
 
-  // 2. Studio Controller Screens & Monitors
-  if (!previewMainInput) return;
+  // 2. Controller UI Sync
+  if (!centerEditorInput) return;
 
-  let mainPreviewVal = previewMainInput.value;
-  let bandPreviewVal = previewBandInput.value;
-
-  // Update Template Builder visual screens in real-time
-  if (templateMainPreviewText) templateMainPreviewText.textContent = partLyricsInput.value || 'Drafting main lyrics...';
-  if (templateBandPreviewText) templateBandPreviewText.textContent = partBandInput.value || 'Drafting band chords...';
-
-  // Update Preview Buffer screens
-  if (previewMainScreenText) previewMainScreenText.textContent = mainPreviewVal;
-  if (previewBandScreenText) previewBandScreenText.textContent = bandPreviewVal;
+  // Save current textarea content to appropriate state property
+  if (activeEditingMode === 'MAIN') {
+    state.mainText = centerEditorInput.value;
+  } else {
+    state.bandText = centerEditorInput.value;
+  }
 
   if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
-    if (liveMainScreenText) liveMainScreenText.textContent = '';
-    if (liveBandScreenText) liveBandScreenText.textContent = '';
-    if (mainPreviewText) mainPreviewText.textContent = '';
-    if (mobilePreviewText) mobilePreviewText.textContent = '';
+    if (mainLivePreviewText) mainLivePreviewText.textContent = '';
+    if (cpLivePreviewText) cpLivePreviewText.textContent = '';
+    if (leftCpPreviewText) leftCpPreviewText.textContent = '';
     return;
   }
 
-  // Update Live Program screens
-  if (liveMainScreenText) liveMainScreenText.textContent = state.mainText;
-  if (liveBandScreenText) liveBandScreenText.textContent = state.bandText;
-
-  // Update Right Reference monitors
-  if (mainPreviewText) mainPreviewText.textContent = state.mainText;
-  if (mobilePreviewText) mobilePreviewText.textContent = state.bandText;
+  // Update Live View Monitors
+  if (mainLivePreviewText) mainLivePreviewText.textContent = state.mainText;
+  if (cpLivePreviewText) cpLivePreviewText.textContent = state.bandText;
+  if (leftCpPreviewText) leftCpPreviewText.textContent = state.bandText;
 }
 
-// Listen for updates from other tabs/windows
-window.addEventListener('storage', (e) => {
-  if (e.key === STATE_KEY) {
-    state = JSON.parse(e.newValue) || state;
-    renderUI();
+// Switch between Main (Landscape) and CP (Portrait) editing mode
+btnSwitchView.addEventListener('click', () => {
+  if (activeEditingMode === 'MAIN') {
+    activeEditingMode = 'CP';
+    editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
+    btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
+    centerEditorScreen.classList.remove('landscape');
+    centerEditorScreen.classList.add('portrait');
+    centerEditorInput.value = state.bandText;
+  } else {
+    activeEditingMode = 'MAIN';
+    editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
+    btnSwitchView.textContent = 'SWITCH TO CP VIEW';
+    centerEditorScreen.classList.remove('portrait');
+    centerEditorScreen.classList.add('landscape');
+    centerEditorInput.value = state.mainText;
   }
+  renderUI();
 });
 
-// Controller Initialization
-if (previewMainInput && previewBandInput) {
-  previewMainInput.value = state.mainText;
-  previewBandInput.value = state.bandText;
+centerEditorInput.addEventListener('input', () => {
+  renderUI();
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+});
 
-  previewMainInput.addEventListener('input', renderUI);
-  previewBandInput.addEventListener('input', renderUI);
-  if (partLyricsInput) partLyricsInput.addEventListener('input', renderUI);
-  if (partBandInput) partBandInput.addEventListener('input', renderUI);
+// Action buttons
+document.getElementById('btnPushLive').addEventListener('click', () => {
+  renderUI();
+  broadcastState({ mode: 'SHOW' });
+});
 
-  document.getElementById('btnPushLive').addEventListener('click', () => {
-    broadcastState({
-      mainText: previewMainInput.value,
-      bandText: previewBandInput.value,
-      mode: 'SHOW'
-    });
-  });
+document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
+document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
 
-  document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
-  document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
-
-  searchWebBtn.addEventListener('click', async () => {
-    const query = webSearchInput.value.trim();
-    if (!query) return;
-
-    searchResults.innerHTML = '<div class="search-result-item">Searching web...</div>';
-    try {
-      const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(query)}`);
-      const data = await res.json();
-      
-      searchResults.innerHTML = '';
-      if (data.lyrics) {
-        const item = document.createElement('div');
-        item.className = 'search-result-item';
-        item.textContent = `Found: ${query}`;
-        item.addEventListener('click', () => {
-          songTitleInput.value = query;
-          partLyricsInput.value = data.lyrics;
-          partBandInput.value = data.lyrics;
-          renderUI();
-          alert('Lyrics loaded to Song Builder!');
-        });
-        searchResults.appendChild(item);
+// Render Templates in the Scrollable Left Bar
+function renderTemplates() {
+  if (!templateBar) return;
+  templateBar.innerHTML = '';
+  templates.forEach((tpl) => {
+    const card = document.createElement('div');
+    card.className = 'template-card-item';
+    card.textContent = tpl.title;
+    card.addEventListener('click', () => {
+      if (tpl.type === 'main') {
+        activeEditingMode = 'MAIN';
+        editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
+        btnSwitchView.textContent = 'SWITCH TO CP VIEW';
+        centerEditorScreen.classList.remove('portrait');
+        centerEditorScreen.classList.add('landscape');
+        centerEditorInput.value = tpl.text;
+        state.mainText = tpl.text;
       } else {
-        searchResults.innerHTML = '<div class="search-result-item">No lyrics found. Paste manually below.</div>';
+        activeEditingMode = 'CP';
+        editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
+        btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
+        centerEditorScreen.classList.remove('landscape');
+        centerEditorScreen.classList.add('portrait');
+        centerEditorInput.value = tpl.text;
+        state.bandText = tpl.text;
       }
-    } catch (e) {
-      searchResults.innerHTML = '<div class="search-result-item">Search error or offline. Use manual entry.</div>';
-    }
-  });
-
-  addPartBtn.addEventListener('click', () => {
-    const type = partSelect.value;
-    const lyrics = partLyricsInput.value.trim();
-    const bandNotes = partBandInput.value.trim();
-
-    if (!lyrics) return alert('Lagyan ng lyrics!');
-
-    currentSongParts.push({ type, lyrics, bandNotes });
-    partLyricsInput.value = '';
-    partBandInput.value = '';
-    renderUI();
-    renderTriggers(currentSongParts);
-  });
-
-  saveSongBtn.addEventListener('click', () => {
-    const title = songTitleInput.value.trim();
-    if (!title || currentSongParts.length === 0) return alert('Lagyan ng Title at Parts!');
-
-    songs.push({ id: Date.now(), title, parts: [...currentSongParts] });
-    localStorage.setItem(SONGS_KEY, JSON.stringify(songs));
-    songTitleInput.value = '';
-    currentSongParts = [];
-    songPartTriggers.innerHTML = '';
-    renderSongList();
-    alert('Na-save na ang kanta!');
-  });
-
-  function renderSongList() {
-    songList.innerHTML = '';
-    songs.forEach(song => {
-      const item = document.createElement('div');
-      item.className = 'song-item';
-      item.textContent = song.title;
-      item.addEventListener('click', () => renderTriggers(song.parts));
-      songList.appendChild(item);
+      renderUI();
     });
-  }
-
-  function renderTriggers(parts) {
-    songPartTriggers.innerHTML = '';
-    parts.forEach(part => {
-      const btn = document.createElement('button');
-      btn.className = 'part-btn';
-      btn.textContent = part.type;
-      btn.addEventListener('click', () => {
-        previewMainInput.value = part.lyrics;
-        previewBandInput.value = part.bandNotes || part.lyrics;
-        renderUI();
-      });
-      songPartTriggers.appendChild(btn);
-    });
-  }
-
-  renderSongList();
+    templateBar.appendChild(card);
+  });
 }
 
+// Initial sync
+if (centerEditorInput) {
+  centerEditorInput.value = state.mainText;
+}
+
+renderTemplates();
 renderUI();
