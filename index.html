@@ -1,30 +1,55 @@
-<div class="workspace">
-    <!-- Left Column: Templates -->
-    <div class="templates-sidebar">
-        <h3>Templates</h3>
-        <div id="templateBar" class="template-bar-vertical">
-            <!-- Populated dynamically by app.js -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimedia Presenter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Toolbar -->
+        <header class="top-toolbar">
+            <h2>Multimedia Presenter</h2>
+            <div class="action-buttons">
+                <button id="btnPushLive" class="btn primary">Go Live</button>
+                <button id="btnClear" class="btn warning">Clear</button>
+                <button id="btnBlack" class="btn dark">Blackout</button>
+                <button id="btnSwitchView" class="btn secondary">Switch to CP View</button>
+            </div>
+        </header>
+
+        <!-- 3-Column Workspace -->
+        <div class="workspace">
+            <!-- Left: Templates Sidebar -->
+            <div class="templates-sidebar">
+                <h3>Templates</h3>
+                <div id="templateBar" class="template-bar-vertical"></div>
+            </div>
+
+            <!-- Center: Editor Screen -->
+            <div class="editor-section">
+                <div id="editingModeLabel" class="mode-label">EDITING: MAIN VIEW (LANDSCAPE)</div>
+                <div id="centerCanvasBox" class="canvas-box landscape">
+                    <div id="centerEditorInput" class="editor-input" contenteditable="true"></div>
+                </div>
+            </div>
+
+            <!-- Right: Previews -->
+            <div class="preview-panel">
+                <h3>Live Previews</h3>
+                <div class="preview-card">
+                    <span>Main Display</span>
+                    <div id="mainLivePreview" class="preview-box"></div>
+                </div>
+                <div class="preview-card">
+                    <span>Band / CP Display</span>
+                    <div id="cpLivePreview" class="preview-box"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Center Column: Editing Canvas -->
-    <div class="editor-section">
-        <div id="editingModeLabel" class="mode-label">EDITING: MAIN VIEW (LANDSCAPE)</div>
-        <div id="centerCanvasBox" class="canvas-box landscape">
-            <div id="centerEditorInput" class="editor-input" contenteditable="true"></div>
-        </div>
-    </div>
-
-    <!-- Right Column: Previews -->
-    <div class="preview-panel">
-        <h3>Live Previews</h3>
-        <div class="preview-card">
-            <span>Main Display</span>
-            <div id="mainLivePreview" class="preview-box"></div>
-        </div>
-        <div class="preview-card">
-            <span>Band / CP Display</span>
-            <div id="cpLivePreview" class="preview-box"></div>
-        </div>
-    </div>
-</div>
+    <script src="app.js"></script>
+</body>
+</html>
