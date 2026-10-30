@@ -191,13 +191,14 @@ body {
     overflow: hidden;
 }
 
-/* Portrait Live Monitor Box (9:16 aspect ratio) */
+/* Portrait Monitor (Rotated 90 degrees, matching the landscape monitor's height scale) */
 .canvas-box.portrait-box-small {
-    border-color: #06b6d4; /* Cyan accent border to distinguish portrait */
+    border-color: #06b6d4;
     padding: 12px;
     aspect-ratio: 9 / 16;
-    width: 70%; /* Naka-center at tamang laki para hindi masyadong sakop ang buong sidebar */
-    max-height: 28vh;
+    width: 100%;
+    /* Ginagamit nito ang tamang sukat na naka-align sa landscape monitor pero naka-portrait */
+    max-height: 38vh; 
     margin: 0 auto;
 }
 
