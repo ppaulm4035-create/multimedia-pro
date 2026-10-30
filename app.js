@@ -41,7 +41,7 @@ function updateApp() {
 
     livePreviewBox.textContent = displayContent;
 
-    // 3. Render templates using exact live monitor component markup
+    // 3. Render templates using mathematically scaled identical mirrors
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -52,23 +52,33 @@ function renderTemplates() {
     templateBar.innerHTML = '';
 
     templates.forEach((tpl, index) => {
-        // Exact structural duplicate of the right panel's preview-card
         const wrapper = document.createElement('div');
         wrapper.className = `template-card-wrapper ${index === appState.activeSlideIndex ? 'active' : ''}`;
 
         const label = document.createElement('span');
         label.textContent = `Slide ${index + 1}`;
 
-        const canvasBox = document.createElement('div');
-        canvasBox.className = 'canvas-box live-box-small';
+        // Miniature canvas container
+        const canvasContainer = document.createElement('div');
+        canvasContainer.className = 'thumb-canvas-container';
 
-        const textOutput = document.createElement('div');
-        textOutput.className = 'editor-output live-text-small';
-        textOutput.textContent = tpl.content;
+        // Virtual stage that matches exact text wrapping proportions
+        const virtualStage = document.createElement('div');
+        virtualStage.className = 'thumb-virtual-stage';
+        virtualStage.textContent = tpl.content;
 
-        canvasBox.appendChild(textOutput);
+        canvasContainer.appendChild(virtualStage);
         wrapper.appendChild(label);
-        wrapper.appendChild(canvasBox);
+        wrapper.appendChild(canvasContainer);
+
+        // Dynamically compute precise scale factor so text wrapping matches identically
+        setTimeout(() => {
+            const containerWidth = canvasContainer.clientWidth;
+            if (containerWidth > 0) {
+                const scaleVal = containerWidth / 800;
+                virtualStage.style.transform = `scale(${scaleVal})`;
+            }
+        }, 10);
 
         // Click to load slide into editing screen
         wrapper.addEventListener('click', () => {
