@@ -12,14 +12,18 @@ let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
     { id: 3, title: 'Slide 3', content: "Sa pag-ibig Mo,\npalaging ligtas ang puso" }
 ];
 
+let contextTargetIndex = null;
+
 const templateBar = document.getElementById('templateBar');
 const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
-const btnNewSlide = document.getElementById('btnNewSlide');
-const btnDuplicate = document.getElementById('btnDuplicate');
-const btnDelete = document.getElementById('btnDelete');
+const contextMenu = document.getElementById('contextMenu');
+
+const ctxNew = document.getElementById('ctxNew');
+const ctxDuplicate = document.getElementById('ctxDuplicate');
+const ctxDelete = document.getElementById('ctxDelete');
 
 function updateApp() {
     const currentText = centerEditor ? centerEditor.value : '';
@@ -76,6 +80,7 @@ function renderTemplates() {
             }
         }, 10);
 
+        // Left click to select slide
         wrapper.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
@@ -85,49 +90,65 @@ function renderTemplates() {
             updateApp();
         });
 
+        // Right click for PowerPoint-style context menu
+        wrapper.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextTargetIndex = index;
+
+            // Position and display popup menu
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.pageX} তোলে` || `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        });
+
         templateBar.appendChild(wrapper);
     });
 }
 
-// --- NATIVE SLIDE MANAGEMENT TOOLS ---
+// Hide context menu when clicking anywhere else
+document.addEventListener('click', () => {
+    if (contextMenu) contextMenu.style.display = 'none';
+});
+
+// --- CONTEXT MENU ACTIONS ---
 
 // 1. New Slide
-btnNewSlide?.addEventListener('click', () => {
+ctxNew?.addEventListener('click', () => {
     const newSlide = {
         id: Date.now(),
         title: `Slide ${templates.length + 1}`,
         content: "New Slide Text"
     };
-    templates.splice(appState.activeSlideIndex + 1, 0, newSlide);
-    appState.activeSlideIndex++;
+    templates.splice(contextTargetIndex + 1, 0, newSlide);
+    appState.activeSlideIndex = contextTargetIndex + 1;
     appState.status = 'SHOW';
     if (centerEditor) centerEditor.value = newSlide.content;
     updateApp();
 });
 
 // 2. Duplicate Slide
-btnDuplicate?.addEventListener('click', () => {
-    const currentContent = centerEditor ? centerEditor.value : '';
+ctxDuplicate?.addEventListener('click', () => {
+    const targetContent = templates[contextTargetIndex].content;
     const duplicatedSlide = {
         id: Date.now(),
         title: `Slide ${templates.length + 1}`,
-        content: currentContent
+        content: targetContent
     };
-    templates.splice(appState.activeSlideIndex + 1, 0, duplicatedSlide);
-    appState.activeSlideIndex++;
+    templates.splice(contextTargetIndex + 1, 0, duplicatedSlide);
+    appState.activeSlideIndex = contextTargetIndex + 1;
     appState.status = 'SHOW';
     if (centerEditor) centerEditor.value = duplicatedSlide.content;
     updateApp();
 });
 
 // 3. Delete Slide
-btnDelete?.addEventListener('click', () => {
+ctxDelete?.addEventListener('click', () => {
     if (templates.length <= 1) {
         alert("You must keep at least one slide!");
         return;
     }
-    templates.splice(appState.activeSlideIndex, 1);
-    if (appState.activeSlideIndex >= templates.length) {
+    templates.splice(contextTargetIndex, 1);
+    if (appState.activeSiteIndex >= templates.length) {
         appState.activeSlideIndex = templates.length - 1;
     }
     appState.status = 'SHOW';
