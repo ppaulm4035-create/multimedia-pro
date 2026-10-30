@@ -14,7 +14,7 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: 300px 1fr 300px;
+  grid-template-columns: 280px 1fr 280px;
   height: 100vh;
   gap: 12px;
   padding: 12px;
@@ -32,8 +32,8 @@ body {
   overflow: hidden;
 }
 
-.template-bar-scrollable {
-  height: 55%;
+.slide-list-scrollable {
+  flex: 1;
   background: #141414;
   border: 1px solid #333;
   border-radius: 6px;
@@ -44,19 +44,18 @@ body {
   overflow-y: auto;
 }
 
-.template-card-item {
-  background: #2a2a2a;
+.slide-thumb {
+  background: #222;
   border: 1px solid #444;
   border-radius: 4px;
   padding: 10px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   color: #fff;
-  text-align: center;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
-.template-card-item:hover {
+.slide-thumb:hover {
   background: #0070f3;
   border-color: #0070f3;
 }
@@ -65,6 +64,13 @@ body {
   border: 0;
   border-top: 1px solid #333;
   margin: 5px 0;
+}
+
+.side-preview-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 /* CENTER PANEL */
@@ -143,50 +149,46 @@ body {
   align-items: center;
 }
 
-/* MONITOR BOXES & PROPORTIONAL SIZES */
-.monitor-box {
+/* UNIFORM WYSIWYG SCREEN BOXES */
+.screen-box {
   background: #000;
   border: 2px solid #333;
   border-radius: 6px;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Landscape for Previews (Right & Left) */
-.right-panel .monitor-box.landscape {
-  height: 160px;
+/* Landscape Proportion (Live & Edit) */
+.screen-box.landscape {
   width: 100%;
+  height: 180px;
 }
 
-/* Portrait for Previews (Right & Left) */
-.monitor-box.portrait {
-  height: 260px;
-  width: 155px;
-  margin: 0 auto;
-  border: 2px solid #00ffcc;
-  border-radius: 8px;
-}
-
-/* LARGER PROPORTIONAL SIZES FOR THE CENTER EDITING SCREEN */
-.editor-box.landscape {
+/* Portrait Proportion (Live & Edit - 90 deg rotated style) */
+.screen-box.portrait {
+  width: 130px;
   height: 220px;
-  width: 100%;
+  border-color: #00ffcc;
+}
+
+/* Center Active Canvas Box (Larger but proportionally identical) */
+.center-panel .screen-box.landscape {
+  height: 240px;
   border-color: #0070f3;
 }
 
-.editor-box.portrait {
-  height: 320px;
-  width: 190px;
-  margin: 0 auto;
+.center-panel .screen-box.portrait {
+  width: 160px;
+  height: 270px;
   border-color: #00ffcc;
-  border-radius: 8px;
+  margin: 0 auto;
 }
 
-/* Inner Text Display */
-.preview-inner {
+/* Screen Content / Textarea Alignment */
+.screen-content {
   width: 100%;
   height: 100%;
   padding: 12px;
@@ -196,37 +198,40 @@ body {
   text-align: center;
   white-space: pre-wrap;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 14px;
   color: #ffffff;
 }
 
-.monitor-box.portrait .preview-inner {
+.screen-box.portrait .screen-content {
   font-family: monospace;
-  font-size: 12px;
+  font-size: 11px;
   color: #00ffcc;
   text-align: left;
   justify-content: flex-start;
   align-items: flex-start;
 }
 
-/* Center Editor Textarea */
-.editor-box textarea {
+.active-canvas textarea {
   width: 100%;
   height: 100%;
   background: transparent;
   border: none;
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: bold;
   text-align: center;
   resize: none;
   outline: none;
-  padding: 15px;
+  padding: 12px;
   white-space: pre-wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.editor-box.portrait textarea {
+.screen-box.portrait.active-canvas textarea {
   font-family: monospace;
-  font-size: 13px;
+  font-size: 11px;
   color: #00ffcc;
   text-align: left;
 }
@@ -247,6 +252,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  align-items: center;
 }
 
 .monitor-title {
@@ -254,9 +260,10 @@ body {
   font-weight: bold;
   color: #aaa;
   text-transform: uppercase;
+  align-self: flex-start;
 }
 
-/* EXTERNAL SCREENS (`display.html` & `band.html`) */
+/* EXTERNAL SCREENS */
 body.display-screen, body.band-screen {
   background-color: #000;
   height: 100vh;
