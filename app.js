@@ -10,7 +10,7 @@ let state = JSON.parse(localStorage.getItem(STATE_KEY)) || {
 let songs = JSON.parse(localStorage.getItem(SONGS_KEY)) || [];
 let currentSongParts = [];
 
-// DOM Elements
+// DOM Elements (Controller)
 const previewMainInput = document.getElementById('previewMainInput');
 const previewBandInput = document.getElementById('previewBandInput');
 const liveMainDisplay = document.getElementById('liveMainDisplay');
@@ -30,14 +30,26 @@ const songPartTriggers = document.getElementById('songPartTriggers');
 const webSearchInput = document.getElementById('webSearchInput');
 const searchWebBtn = document.getElementById('searchWebBtn');
 const searchResults = document.getElementById('searchResults');
+const lyricsDisplay = document.getElementById('lyricsDisplay');
 
 function broadcastState(newState) {
   state = { ...state, ...newState };
   localStorage.setItem(STATE_KEY, JSON.stringify(state));
-  renderControllerUI();
+  renderUI();
 }
 
-function renderControllerUI() {
+function renderUI() {
+  // 1. If we are on external Display/Band windows
+  if (lyricsDisplay) {
+    let displayContent = document.body.classList.contains('band-screen') ? state.bandText : state.mainText;
+    if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
+      displayContent = '';
+    }
+    lyricsDisplay.textContent = displayContent;
+    return;
+  }
+
+  // 2. Otherwise, we are on the Studio Controller UI
   if (!mainPreviewText || !mobilePreviewText) return;
 
   let mainDisplay = state.mainText;
@@ -55,12 +67,19 @@ function renderControllerUI() {
   mobilePreviewText.textContent = bandDisplay;
 }
 
+// Listen for updates from other tabs/windows if running concurrently
+window.addEventListener('storage', (e) => {
+  if (e.key === STATE_KEY) {
+    state = JSON.parse(e.newValue) || state;
+    renderUI();
+  }
+});
+
+// Controller Initialization
 if (previewMainInput && previewBandInput) {
-  // Initialize with current state
   previewMainInput.value = state.mainText;
   previewBandInput.value = state.bandText;
 
-  // PUSH TO LIVE (OBS Studio Transition style)
   document.getElementById('btnPushLive').addEventListener('click', () => {
     broadcastState({
       mainText: previewMainInput.value,
@@ -72,14 +91,12 @@ if (previewMainInput && previewBandInput) {
   document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
   document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
 
-  // Web Search Fetcher (Simulated open lyrics lookup via public API/fallback)
   searchWebBtn.addEventListener('click', async () => {
     const query = webSearchInput.value.trim();
     if (!query) return;
 
     searchResults.innerHTML = '<div class="search-result-item">Searching web...</div>';
     try {
-      // Using public lyrics endpoint simulation
       const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(query)}`);
       const data = await res.json();
       
@@ -103,7 +120,6 @@ if (previewMainInput && previewBandInput) {
     }
   });
 
-  // Add Song Part
   addPartBtn.addEventListener('click', () => {
     const type = partSelect.value;
     const lyrics = partLyricsInput.value.trim();
@@ -117,7 +133,6 @@ if (previewMainInput && previewBandInput) {
     renderTriggers(currentSongParts);
   });
 
-  // Save Full Song
   saveSongBtn.addEventListener('click', () => {
     const title = songTitleInput.value.trim();
     if (!title || currentSongParts.length === 0) return alert('Lagyan ng Title at Parts!');
@@ -148,7 +163,6 @@ if (previewMainInput && previewBandInput) {
       const btn = document.createElement('button');
       btn.className = 'part-btn';
       btn.textContent = part.type;
-      // Studio Mode behavior: Clicking trigger loads into PREVIEW first, or direct push if wanted
       btn.addEventListener('click', () => {
         previewMainInput.value = part.lyrics;
         previewBandInput.value = part.bandNotes || part.lyrics;
@@ -158,5 +172,7 @@ if (previewMainInput && previewBandInput) {
   }
 
   renderSongList();
-  renderControllerUI();
 }
+
+// Initial render call across all pages
+renderUI();
