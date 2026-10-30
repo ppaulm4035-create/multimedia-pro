@@ -9,26 +9,22 @@
 <body>
   <div class="app-layout">
     
-    <!-- LEFT PANEL: Templates Area & CP Mini Monitor -->
+    <!-- LEFT PANEL: Templates & CP Preview -->
     <div class="left-panel">
       <h3>Templates Library</h3>
       
-      <!-- Long Scrollable Template Bar (Landscape) - 60% height -->
       <label class="section-label">Templates (Landscape):</label>
-      <div id="templateBar" class="template-bar-scrollable">
-        <!-- Scrollable templates will be injected here -->
-      </div>
+      <div id="templateBar" class="template-bar-scrollable"></div>
 
       <hr class="divider">
 
-      <!-- CP Portrait Screen at the Bottom -->
       <label class="section-label">CP Portrait Template View:</label>
-      <div id="leftCpPreview" class="preview-screen portrait">
-        <div class="preview-text">CP View...</div>
+      <div class="monitor-box portrait">
+        <div id="leftCpPreview" class="preview-inner">CP View...</div>
       </div>
     </div>
 
-    <!-- CENTER PANEL: Studio Controller & Single Editor with Switch -->
+    <!-- CENTER PANEL: Studio Controller & Switch Editor -->
     <div class="center-panel">
       <div class="panel-header">
         <h2>Studio Controller</h2>
@@ -38,23 +34,22 @@
         </div>
       </div>
 
-      <!-- Studio Mode Action Bar -->
       <div class="studio-action-bar">
         <button id="btnPushLive" class="btn transition-btn">PUSH TO LIVE (TRANSITION)</button>
         <button id="btnClear" class="btn warning">CLEAR</button>
         <button id="btnBlack" class="btn danger">BLACK</button>
       </div>
 
-      <!-- Single Editing Screen with Main/CP Switch Button -->
+      <!-- Single Switchable Editor Box -->
       <div class="editor-container">
         <div class="editor-top-bar">
           <span id="editingModeLabel" class="section-label">EDITING: MAIN VIEW (LANDSCAPE)</span>
           <button id="btnSwitchView" class="btn primary">SWITCH TO CP VIEW</button>
         </div>
         
-        <!-- Dynamic Editing Screen -->
-        <div id="centerEditorScreen" class="preview-screen landscape editable-screen">
-          <textarea id="centerEditorInput" placeholder="Type text here..."></textarea>
+        <!-- Ang Editing Box na nagbabago ng orientation -->
+        <div id="centerEditorWrapper" class="monitor-box landscape editor-box">
+          <textarea id="centerEditorInput" placeholder="Type lyrics or chords here..."></textarea>
         </div>
       </div>
     </div>
@@ -63,15 +58,15 @@
     <div class="right-panel">
       <div class="monitor-card">
         <div class="monitor-title">Live Main View (Landscape)</div>
-        <div id="mainLivePreview" class="preview-screen landscape">
-          <div class="preview-text"></div>
+        <div class="monitor-box landscape">
+          <div id="mainLivePreview" class="preview-inner"></div>
         </div>
       </div>
 
       <div class="monitor-card">
         <div class="monitor-title">Live CP View (Portrait)</div>
-        <div id="cpLivePreview" class="preview-screen portrait">
-          <div class="preview-text"></div>
+        <div class="monitor-box portrait">
+          <div id="cpLivePreview" class="preview-inner"></div>
         </div>
       </div>
     </div>
