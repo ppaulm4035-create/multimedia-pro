@@ -41,7 +41,7 @@ function updateApp() {
 
     livePreviewBox.textContent = displayContent;
 
-    // 3. Render templates as literal HTML duplicates of the live monitor element
+    // 3. Render templates using exact live monitor component markup
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -52,20 +52,22 @@ function renderTemplates() {
     templateBar.innerHTML = '';
 
     templates.forEach((tpl, index) => {
-        // Outer wrapper for selection state
+        // Exact structural duplicate of the right panel's preview-card
         const wrapper = document.createElement('div');
-        wrapper.className = `slide-thumb-wrapper ${index === appState.activeSlideIndex ? 'active' : ''}`;
+        wrapper.className = `template-card-wrapper ${index === appState.activeSlideIndex ? 'active' : ''}`;
 
-        // Literal duplicate structure of the live monitor (.canvas-box.live-box-small)
+        const label = document.createElement('span');
+        label.textContent = `Slide ${index + 1}`;
+
         const canvasBox = document.createElement('div');
         canvasBox.className = 'canvas-box live-box-small';
 
-        // Literal duplicate structure of the text output (.editor-output.live-text-small)
         const textOutput = document.createElement('div');
         textOutput.className = 'editor-output live-text-small';
         textOutput.textContent = tpl.content;
 
         canvasBox.appendChild(textOutput);
+        wrapper.appendChild(label);
         wrapper.appendChild(canvasBox);
 
         // Click to load slide into editing screen
