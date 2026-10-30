@@ -8,21 +8,31 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Top Toolbar -->
+        <!-- Top Toolbar with GO LIVE Button -->
         <header class="top-toolbar">
             <h2>Multimedia Presenter</h2>
             <div class="action-buttons">
+                <button id="btnGoLive" class="btn primary">🔴 GO LIVE (PUSH)</button>
                 <button id="btnClear" class="btn warning">Clear</button>
                 <button id="btnBlack" class="btn dark">Blackout</button>
             </div>
         </header>
 
-        <!-- Single Workspace for Editing Monitor -->
+        <!-- 2-Column Studio Workspace: Center Editor & Right Live Monitor -->
         <div class="workspace">
+            <!-- Left / Center: Editing Screen (Master Source) -->
             <div class="editor-section">
-                <div class="mode-label">TV MONITOR VIEW (16:9)</div>
+                <div class="mode-label">EDITING SCREEN (WORKPLACE)</div>
                 <div class="canvas-box">
                     <div id="centerEditor" class="editor-input" contenteditable="true" placeholder="Type presentation content here..."></div>
+                </div>
+            </div>
+
+            <!-- Right Column: Live Monitor (Output Display) -->
+            <div class="preview-panel">
+                <div class="mode-label">LIVE MONITOR (OUTPUT)</div>
+                <div class="canvas-box live-box">
+                    <div id="livePreviewBox" class="editor-input"></div>
                 </div>
             </div>
         </div>
