@@ -39,24 +39,26 @@ body {
 .btn {
     padding: 8px 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.2s;
 }
+.btn.primary { background: #4f46e5; color: white; }
+.btn.primary.live-active { background: #dc2626; box-shadow: 0 0 10px rgba(220, 38, 38, 0.6); }
 .btn.warning { background: #d97706; color: white; }
 .btn.dark { background: #374151; color: white; }
 
 .workspace {
     display: flex;
     flex: 1;
-    justify-content: center;
-    align-items: center;
+    gap: 20px;
     min-height: 0;
 }
 
-.editor-section {
-    width: 100%;
-    max-width: 900px;
+/* Editor & Live Monitor Sections */
+.editor-section, .preview-panel {
+    flex: 1;
     background: #1e1e1e;
     border-radius: 8px;
     padding: 20px;
@@ -74,7 +76,7 @@ body {
 /* Strict 16:9 TV Monitor Aspect Ratio Box */
 .canvas-box {
     width: 100%;
-    aspect-ratio: 16 / 9; /* Perfect 16:9 TV widescreen ratio */
+    aspect-ratio: 16 / 9;
     background: #000;
     border: 3px solid #374151;
     border-radius: 8px;
@@ -82,12 +84,16 @@ body {
     align-items: center;
     justify-content: center;
     padding: 40px;
-    overflow-hidden: hidden;
+    overflow: hidden;
     position: relative;
-    margin: 0 auto;
+    margin: auto;
 }
 
-/* Centered TV Presentation Text */
+.canvas-box.live-box {
+    border-color: #4f46e5; /* Distinct border for live output monitor */
+}
+
+/* Centered Presentation Text */
 .editor-input {
     width: 100%;
     max-height: 100%;
