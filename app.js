@@ -88,7 +88,7 @@ function renderTemplates() {
     });
 }
 
-// --- FILE PARSING LOGIC (.pptx, .docx, .txt) ---
+// --- SMARTER PPTX PARSER (Preserves Titles & Paragraphs) ---
 btnImport?.addEventListener('click', () => {
     fileImporter.click();
 });
@@ -114,17 +114,28 @@ fileImporter?.addEventListener('change', async (e) => {
             let slideTexts = [];
             let slideIndex = 1;
 
-            // PowerPoint stores slides inside ppt/slides/slide1.xml, slide2.xml, etc.
             while (zip.file(`ppt/slides/slide${slideIndex}.xml`)) {
                 const xmlContent = await zip.file(`ppt/slides/slide${slideIndex}.xml`).async('text');
                 
-                // Simple regex extraction to pull text chunks out of PowerPoint XML nodes (<a:t>...</a:t>)
-                const matches = xmlContent.match(/<a:t[^>]*>(.*?)<\/a:t>/g);
-                if (matches) {
-                    const extracted = matches.map(m => m.replace(/<[^>]+>/g, '')).join(' ');
-                    if (extracted.trim() !== '') {
-                        slideTexts.push(extracted.trim());
-                    }
+                // Extract paragraphs (<a:p>) to preserve structural line spacing
+                const paragraphMatches = xmlContent.match(/<a:p[\s\>](.*?)<\/a:p>/g);
+                let slideLines = [];
+
+                if (paragraphMatches) {
+                    paragraphMatches.forEach(p => {
+                        const textChunks = p.match(/<a:t[^>]*>(.*?)<\/a:t>/g);
+                        if (textChunks) {
+                            const lineText = textChunks.map(t => t.replace(/<[^>]+>/g, '')).join('');
+                            if (lineText.trim() !== '') {
+                                slideLines.push(lineText.trim());
+                            }
+                        }
+                    });
+                }
+
+                if (slideLines.length > 0) {
+                    // Join paragraphs with proper line breaks so titles and bodies stay separated
+                    slideTexts.push(slideLines.join('\n\n'));
                 }
                 slideIndex++;
             }
@@ -140,7 +151,7 @@ fileImporter?.addEventListener('change', async (e) => {
                 if (centerEditor) centerEditor.value = templates[0].content;
                 localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
                 updateApp();
-                alert(`Successfully imported ${slideTexts.length} slides from PowerPoint!`);
+                alert(`Successfully imported ${slideTexts.length} slides with layout structure!`);
             } else {
                 alert('No readable slide text found in this PowerPoint file.');
             }
@@ -152,11 +163,10 @@ fileImporter?.addEventListener('change', async (e) => {
         alert('Error reading file. Please try another file.');
     }
 
-    fileImporter.value = ''; // Reset input
+    fileImporter.value = '';
 });
 
 function loadSlidesFromText(fullText) {
-    // Split text paragraphs by double line breaks into separate slides
     const chunks = fullText.split(/\n\s*\n/).filter(c => c.trim() !== '');
     if (chunks.length > 0) {
         templates = chunks.map((chunk, idx) => ({
@@ -169,7 +179,7 @@ function loadSlidesFromText(fullText) {
         if (centerEditor) centerEditor.value = templates[0].content;
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
         updateApp();
-        alert(`Successfully imported ${chunks.length} slides from document!`);
+        alert(`Successfully imported ${chunks.length} slides!`);
     } else {
         alert('The document appears to be empty.');
     }
