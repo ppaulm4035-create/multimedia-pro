@@ -17,17 +17,17 @@ const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
+const btnImport = document.getElementById('btnImport');
+const fileImporter = document.getElementById('fileImporter');
 
 function updateApp() {
     const currentText = centerEditor ? centerEditor.value : '';
 
-    // 1. Sync current text to active slide template
     if (templates[appState.activeSlideIndex]) {
         templates[appState.activeSlideIndex].content = currentText;
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    // 2. Determine display output for live monitor
     let displayContent = currentText;
     if (appState.status === 'CLEAR') {
         displayContent = '';
@@ -40,8 +40,6 @@ function updateApp() {
     }
 
     livePreviewBox.textContent = displayContent;
-
-    // 3. Render templates using mathematically scaled identical mirrors
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -58,11 +56,9 @@ function renderTemplates() {
         const label = document.createElement('span');
         label.textContent = `Slide ${index + 1}`;
 
-        // Miniature canvas container
         const canvasContainer = document.createElement('div');
         canvasContainer.className = 'thumb-canvas-container';
 
-        // Virtual stage that matches exact text wrapping proportions
         const virtualStage = document.createElement('div');
         virtualStage.className = 'thumb-virtual-stage';
         virtualStage.textContent = tpl.content;
@@ -71,7 +67,6 @@ function renderTemplates() {
         wrapper.appendChild(label);
         wrapper.appendChild(canvasContainer);
 
-        // Dynamically compute precise scale factor so text wrapping matches identically
         setTimeout(() => {
             const containerWidth = canvasContainer.clientWidth;
             if (containerWidth > 0) {
@@ -80,7 +75,6 @@ function renderTemplates() {
             }
         }, 10);
 
-        // Click to load slide into editing screen
         wrapper.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
@@ -92,6 +86,93 @@ function renderTemplates() {
 
         templateBar.appendChild(wrapper);
     });
+}
+
+// --- FILE PARSING LOGIC (.pptx, .docx, .txt) ---
+btnImport?.addEventListener('click', () => {
+    fileImporter.click();
+});
+
+fileImporter?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const fileName = file.name.toLowerCase();
+
+    try {
+        if (fileName.endsWith('.txt')) {
+            const text = await file.text();
+            loadSlidesFromText(text);
+        } else if (fileName.endsWith('.docx')) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            loadSlidesFromText(result.value);
+        } else if (fileName.endsWith('.pptx')) {
+            const arrayBuffer = await file.arrayBuffer();
+            const zip = await JSZip.loadAsync(arrayBuffer);
+            
+            let slideTexts = [];
+            let slideIndex = 1;
+
+            // PowerPoint stores slides inside ppt/slides/slide1.xml, slide2.xml, etc.
+            while (zip.file(`ppt/slides/slide${slideIndex}.xml`)) {
+                const xmlContent = await zip.file(`ppt/slides/slide${slideIndex}.xml`).async('text');
+                
+                // Simple regex extraction to pull text chunks out of PowerPoint XML nodes (<a:t>...</a:t>)
+                const matches = xmlContent.match(/<a:t[^>]*>(.*?)<\/a:t>/g);
+                if (matches) {
+                    const extracted = matches.map(m => m.replace(/<[^>]+>/g, '')).join(' ');
+                    if (extracted.trim() !== '') {
+                        slideTexts.push(extracted.trim());
+                    }
+                }
+                slideIndex++;
+            }
+
+            if (slideTexts.length > 0) {
+                templates = slideTexts.map((text, idx) => ({
+                    id: idx + 1,
+                    title: `Slide ${idx + 1}`,
+                    content: text
+                }));
+                appState.activeSlideIndex = 0;
+                appState.status = 'SHOW';
+                if (centerEditor) centerEditor.value = templates[0].content;
+                localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+                updateApp();
+                alert(`Successfully imported ${slideTexts.length} slides from PowerPoint!`);
+            } else {
+                alert('No readable slide text found in this PowerPoint file.');
+            }
+        } else {
+            alert('Please select a valid .pptx, .docx, or .txt file.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Error reading file. Please try another file.');
+    }
+
+    fileImporter.value = ''; // Reset input
+});
+
+function loadSlidesFromText(fullText) {
+    // Split text paragraphs by double line breaks into separate slides
+    const chunks = fullText.split(/\n\s*\n/).filter(c => c.trim() !== '');
+    if (chunks.length > 0) {
+        templates = chunks.map((chunk, idx) => ({
+            id: idx + 1,
+            title: `Slide ${idx + 1}`,
+            content: chunk.trim()
+        }));
+        appState.activeSlideIndex = 0;
+        appState.status = 'SHOW';
+        if (centerEditor) centerEditor.value = templates[0].content;
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+        updateApp();
+        alert(`Successfully imported ${chunks.length} slides from document!`);
+    } else {
+        alert('The document appears to be empty.');
+    }
 }
 
 if (centerEditor) {
