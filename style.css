@@ -72,7 +72,7 @@ body {
     padding-right: 4px;
 }
 
-/* Template Card Wrapper that mirrors the Right Panel's preview-card */
+/* Template wrapper card */
 .template-card-wrapper {
     display: flex;
     flex-direction: column;
@@ -146,7 +146,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column & Left Templates Shared Live Monitor Styling */
+/* Right Column: Live Monitor (Untouched) */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -190,7 +190,33 @@ body {
     overflow: hidden;
 }
 
-/* Specific scale adjustment for the template cards on the left so text fits perfectly */
-.template-card-wrapper .editor-output.live-text-small {
-    font-size: 0.45rem; 
+/* --- SCALED MIRROR CONTAINER FOR TEMPLATES --- */
+.thumb-canvas-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid #4b5563;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.thumb-virtual-stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 800px;  /* Master virtual resolution width */
+    height: 450px; /* Master virtual resolution height (16:9) */
+    padding: 40px;
+    color: white;
+    font-size: 36px; /* Proportional font size matching live view */
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: top left;
 }
