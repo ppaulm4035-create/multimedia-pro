@@ -1,78 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Church Presenter - Studio Pro</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="app-layout">
-    
-    <!-- LEFT PANEL: Slide List / Templates -->
-    <div class="left-panel">
-      <h3>Slides Library</h3>
-      <div id="templateBar" class="slide-list-scrollable">
-        <!-- Slides injected here -->
-      </div>
-      <hr class="divider">
-      <div class="side-preview-section">
-        <label class="section-label">CP Preview:</label>
-        <div id="leftCpPreview" class="screen-box portrait">
-          <div class="screen-content">CP View...</div>
+<div class="workspace">
+    <!-- Left Column: Templates -->
+    <div class="templates-sidebar">
+        <h3>Templates</h3>
+        <div id="templateBar" class="template-bar-vertical">
+            <!-- Populated dynamically by app.js -->
         </div>
-      </div>
     </div>
 
-    <!-- CENTER PANEL: Exact WYSIWYG Editing Canvas -->
-    <div class="center-panel">
-      <div class="panel-header">
-        <h2>Studio Controller</h2>
-        <div class="quick-links">
-          <a href="display.html" target="_blank" class="btn link">Main Display</a>
-          <a href="band.html" target="_blank" class="btn link">Band/CP View</a>
+    <!-- Center Column: Editing Canvas -->
+    <div class="editor-section">
+        <div id="editingModeLabel" class="mode-label">EDITING: MAIN VIEW (LANDSCAPE)</div>
+        <div id="centerCanvasBox" class="canvas-box landscape">
+            <div id="centerEditorInput" class="editor-input" contenteditable="true"></div>
         </div>
-      </div>
-
-      <div class="studio-action-bar">
-        <button id="btnPushLive" class="btn transition-btn">PUSH TO LIVE (TRANSITION)</button>
-        <button id="btnClear" class="btn warning">CLEAR</button>
-        <button id="btnBlack" class="btn danger">BLACK</button>
-      </div>
-
-      <!-- Editing Area with Switch -->
-      <div class="editor-container">
-        <div class="editor-top-bar">
-          <span id="editingModeLabel" class="section-label">EDITING: MAIN VIEW (LANDSCAPE)</span>
-          <button id="btnSwitchView" class="btn primary">SWITCH TO CP VIEW</button>
-        </div>
-        
-        <!-- WYSIWYG Canvas Box -->
-        <div id="centerCanvasBox" class="screen-box landscape active-canvas">
-          <div id="centerEditorInput" class="screen-content" contenteditable="true" spellcheck="false" placeholder="Type text here..."></div>
-        </div>
-      </div>
     </div>
 
-    <!-- RIGHT PANEL: Live View Monitors -->
-    <div class="right-panel">
-      <div class="monitor-card">
-        <div class="monitor-title">Live Main View (Landscape)</div>
-        <div class="screen-box landscape">
-          <div id="mainLivePreview" class="screen-content"></div>
+    <!-- Right Column: Previews -->
+    <div class="preview-panel">
+        <h3>Live Previews</h3>
+        <div class="preview-card">
+            <span>Main Display</span>
+            <div id="mainLivePreview" class="preview-box"></div>
         </div>
-      </div>
-
-      <div class="monitor-card">
-        <div class="monitor-title">Live CP View (Portrait)</div>
-        <div class="screen-box portrait">
-          <div id="cpLivePreview" class="screen-content"></div>
+        <div class="preview-card">
+            <span>Band / CP Display</span>
+            <div id="cpLivePreview" class="preview-box"></div>
         </div>
-      </div>
     </div>
-
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
+</div>
