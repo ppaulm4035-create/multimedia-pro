@@ -53,7 +53,6 @@ body {
     min-height: 0;
 }
 
-/* Center Editor Section */
 .editor-section {
     width: 100%;
     max-width: 1000px;
@@ -72,14 +71,16 @@ body {
     font-weight: bold;
 }
 
+/* Widescreen 16:9 canvas box */
 .canvas-box {
     flex: 1;
     background: #000;
     border: 2px solid #374151;
     border-radius: 6px;
     display: flex;
-    flex-direction: column;
-    padding: 32px;
+    align-items: center;    /* Vertically center text */
+    justify-content: center;/* Horizontally center text */
+    padding: 40px;
     overflow-y: auto;
     aspect-ratio: 16 / 9;
     max-height: 75vh;
@@ -87,14 +88,15 @@ body {
     width: 100%;
 }
 
+/* Centered presentation layout matching your screenshot */
 .editor-input {
     width: 100%;
-    height: 100%;
     color: white;
     font-size: 2.2rem;
-    text-align: left;
+    font-weight: 500;
+    text-align: center;     /* Centered text layout */
+    line-height: 1.4;       /* Clean spacing between lines */
     outline: none;
     white-space: pre-wrap;
     word-break: break-word;
-    overflow-y: auto;
 }
