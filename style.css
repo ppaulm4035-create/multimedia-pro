@@ -163,6 +163,7 @@ body {
     gap: 4px;
     font-size: 0.8rem;
     color: #9ca3af;
+    flex: 1; /* Binibigyan ng pantay na hatol sa espasyo */
 }
 
 /* Landscape Live Monitor Box */
@@ -191,14 +192,14 @@ body {
     overflow: hidden;
 }
 
-/* Portrait Monitor (Rotated 90 degrees, matching the landscape monitor's height scale) */
+/* Portrait Monitor (Fixed height matching the available column room, 9:16 ratio) */
 .canvas-box.portrait-box-small {
     border-color: #06b6d4;
     padding: 12px;
     aspect-ratio: 9 / 16;
-    width: 100%;
-    /* Ginagamit nito ang tamang sukat na naka-align sa landscape monitor pero naka-portrait */
-    max-height: 38vh; 
+    height: 100%; /* Pinapunan na ang buong vertical room */
+    max-height: 42vh; /* Mas pinalaki nang konti ang height limit para lumitaw ang tamang sukat */
+    width: auto;
     margin: 0 auto;
 }
 
