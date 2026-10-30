@@ -41,7 +41,7 @@ function updateApp() {
 
     livePreviewBox.textContent = displayContent;
 
-    // 3. Render left templates
+    // 3. Render left templates as exact miniature clones
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
