@@ -18,24 +18,8 @@ const livePreviewBox = document.getElementById('livePreviewBox');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
 
-function getEditorContent() {
-    if (!centerEditor) return '';
-    return centerEditor.innerHTML
-        .replace(/<div><br><\/div>/gi, '\n')
-        .replace(/<div>/gi, '\n')
-        .replace(/<\/div>/gi, '')
-        .replace(/<br\s*[\/]?>/gi, '\n')
-        .replace(/&nbsp;/g, ' ');
-}
-
-function setEditorContent(text) {
-    if (!centerEditor) return;
-    centerEditor.innerHTML = text.replace(/\n/g, '<br>');
-}
-
-// Update live monitor and active template instantly as you type
 function updateApp() {
-    const currentText = getEditorContent();
+    const currentText = centerEditor ? centerEditor.value : '';
 
     // 1. Sync current text to active slide template
     if (templates[appState.activeSlideIndex]) {
@@ -43,7 +27,7 @@ function updateApp() {
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    // 2. Determine display output for live monitor and clear/blackout states
+    // 2. Determine display output for live monitor
     let displayContent = currentText;
     if (appState.status === 'CLEAR') {
         displayContent = '';
@@ -57,7 +41,7 @@ function updateApp() {
 
     livePreviewBox.textContent = displayContent;
 
-    // 3. Render left template thumbnails as instant mirrors
+    // 3. Render left templates
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -71,13 +55,18 @@ function renderTemplates() {
         const card = document.createElement('div');
         card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
         
-        // Instant live mirror text inside the thumbnail
-        card.textContent = tpl.content;
+        const thumbText = document.createElement('div');
+        thumbText.className = 'thumb-text';
+        thumbText.textContent = tpl.content;
+        
+        card.appendChild(thumbText);
 
         card.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
-            setEditorContent(tpl.content);
+            if (centerEditor) {
+                centerEditor.value = tpl.content;
+            }
             updateApp();
         });
 
@@ -94,6 +83,7 @@ if (centerEditor) {
 
 btnClear?.addEventListener('click', () => {
     appState.status = 'CLEAR';
+    if (centerEditor) centerEditor.value = '';
     updateApp();
 });
 
@@ -103,8 +93,8 @@ btnBlack?.addEventListener('click', () => {
 });
 
 function init() {
-    if (templates.length > 0) {
-        setEditorContent(templates[appState.activeSlideIndex].content);
+    if (templates.length > 0 && centerEditor) {
+        centerEditor.value = templates[appState.activeSlideIndex].content;
     }
     renderTemplates();
     updateApp();
