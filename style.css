@@ -113,15 +113,19 @@ body {
 }
 
 .canvas-box {
+    width: 100%;
+    aspect-ratio: 16 / 9;
     background: #000;
     border: 3px solid #374151;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 40px;
     overflow: hidden;
     position: relative;
+    margin: auto;
+    max-height: 65vh;
 }
 
 .editor-input {
@@ -141,26 +145,33 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Clean Live Monitors Panel (Wala nang labels, malaki na ang portrait) */
+/* Right Column: Live Monitors Panel */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
     border-radius: 8px;
-    padding: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: center;
-    justify-content: space-between;
+    overflow-y: auto;
 }
 
-/* Landscape Live Monitor */
+.preview-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+/* Landscape Live Monitor Box */
 .canvas-box.live-box-small {
     border-color: #4f46e5;
-    width: 100%;
+    padding: 12px;
     aspect-ratio: 16 / 9;
-    padding: 10px;
-    flex-shrink: 0;
+    width: 100%;
+    max-height: none;
     margin: 0;
 }
 
@@ -180,18 +191,17 @@ body {
     overflow: hidden;
 }
 
-/* Large Portrait Monitor */
-.canvas-box.portrait-box-large {
+/* Portrait Monitor Box */
+.canvas-box.portrait-box-small {
     border-color: #06b6d4;
-    width: auto;
-    height: 100%;
+    padding: 12px;
     aspect-ratio: 9 / 16;
-    flex: 1;
-    padding: 10px;
-    margin: 0;
+    width: 100%;
+    max-height: 38vh;
+    margin: 0 auto;
 }
 
-.editor-output.portrait-text-large {
+.editor-output.portrait-text-small {
     width: 100%;
     height: 100%;
     color: #9ca3af;
