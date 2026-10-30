@@ -1,7 +1,7 @@
 const STATE_KEY = 'multimedia_single_state';
 
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-    content: 'Welcome to the Presentation',
+    content: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta\nSa pag-ibig Mo,\npalaging ligtas ang puso",
     status: 'SHOW'
 };
 
