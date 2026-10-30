@@ -23,9 +23,27 @@ const btnSwitchView = document.getElementById('btnSwitchView');
 const mainLivePreview = document.getElementById('mainLivePreview');
 const cpLivePreview = document.getElementById('cpLivePreview');
 
+// Helper to convert HTML breaks to plain text with newlines for state/previews
+function getEditorText() {
+    if (!centerEditorInput) return '';
+    // Replace <br> tags with newlines, and strip other html tags safely
+    return centerEditorInput.innerHTML
+        .replace(/<div><br><\/div>/gi, '\n')
+        .replace(/<div>/gi, '\n')
+        .replace(/<\/div>/gi, '')
+        .replace(/<br\s*[\/]?>/gi, '\n')
+        .replace(/&nbsp;/g, ' ');
+}
+
+function setEditorText(text) {
+    if (!centerEditorInput) return;
+    // Convert newlines to innerHTML breaks so lines stack properly
+    centerEditorInput.innerHTML = text.replace(/\n/g, '<br>');
+}
+
 function updateApp() {
     if (centerEditorInput) {
-        appState.currentText = centerEditorInput.innerText;
+        appState.currentText = getEditorText();
     }
 
     let displayContent = appState.currentText;
@@ -59,7 +77,7 @@ function renderTemplates() {
             appState.currentText = tpl.content;
             appState.status = 'SHOW';
 
-            if (centerEditorInput) centerEditorInput.innerText = tpl.content;
+            setEditorText(tpl.content);
             
             if (tpl.view === 'CP') {
                 editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
@@ -83,27 +101,6 @@ function renderTemplates() {
 if (centerEditorInput) {
     centerEditorInput.addEventListener('input', () => {
         updateApp();
-    });
-
-    // Fix Enter key behavior to insert proper line breaks smoothly
-    centerEditorInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const selection = window.getSelection();
-            if (!selection.rangeCount) return;
-            const range = selection.getRangeAt(0);
-            
-            range.deleteContents();
-            const textNode = document.createTextNode('\n');
-            range.insertNode(textNode);
-            
-            range.setStartAfter(textNode);
-            range.setEndAfter(textNode);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            
-            updateApp();
-        }
     });
 }
 
@@ -142,9 +139,7 @@ document.getElementById('btnBlack')?.addEventListener('click', () => {
 });
 
 function init() {
-    if (centerEditorInput) {
-        centerEditorInput.innerText = appState.currentText;
-    }
+    setEditorText(appState.currentText);
     
     if (appState.viewMode === 'CP') {
         editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
