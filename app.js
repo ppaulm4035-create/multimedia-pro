@@ -17,7 +17,6 @@ let contextTargetIndex = null;
 const templateBar = document.getElementById('templateBar');
 const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
-const portraitPreviewBox = document.getElementById('portraitPreviewBox');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
 const contextMenu = document.getElementById('contextMenu');
@@ -38,24 +37,16 @@ function updateApp() {
     if (appState.status === 'CLEAR') {
         displayContent = '';
         livePreviewBox.style.color = 'white';
-        if (portraitPreviewBox) portraitPreviewBox.style.color = 'white';
     } else if (appState.status === 'BLACK') {
         displayContent = '';
         livePreviewBox.style.color = 'transparent';
-        if (portraitPreviewBox) portraitPreviewBox.style.color = 'transparent';
     } else {
         livePreviewBox.style.color = 'white';
-        if (portraitPreviewBox) portraitPreviewBox.style.color = '#9ca3af';
     }
 
     livePreviewBox.textContent = displayContent;
-    if (portraitPreviewBox && appState.status === 'SHOW') {
-        portraitPreviewBox.textContent = currentText || 'Portrait Screen';
-    } else if (portraitPreviewBox) {
-        portraitPreviewBox.textContent = displayContent;
-    }
-
     renderTemplates();
+
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
