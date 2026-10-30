@@ -67,29 +67,23 @@ body {
 .template-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     overflow-y: auto;
     padding-right: 4px;
 }
 
-/* Smaller 16:9 Slide Thumbnails (Live Mirrors) */
 .slide-thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
     background: #000;
     border: 2px solid #4b5563;
     border-radius: 6px;
-    padding: 10px;
-    color: white;
-    font-size: 0.55rem;
-    cursor: pointer;
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    white-space: pre-wrap;
-    word-break: break-word;
+    padding: 12px;
+    cursor: pointer;
+    overflow: hidden;
     transition: all 0.2s;
 }
 
@@ -100,6 +94,17 @@ body {
 .slide-thumb.active {
     border-color: #4f46e5;
     box-shadow: 0 0 0 2px #4f46e5;
+}
+
+.thumb-text {
+    width: 100%;
+    color: white;
+    font-size: 0.45rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.3;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 /* Center Column: Editing Screen */
@@ -135,21 +140,25 @@ body {
     max-height: 65vh;
 }
 
+/* Textarea behaves strictly like a native text box, perfect for PowerPoint copy-pasting */
 .editor-input {
     width: 100%;
-    max-height: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
     color: white;
     font-size: 2.2rem;
     font-weight: 500;
     text-align: center;
     line-height: 1.4;
+    resize: none;
     outline: none;
     white-space: pre-wrap;
     word-break: break-word;
     overflow-y: auto;
 }
 
-/* Right Column: Smaller Live Monitor */
+/* Right Column: Live Monitor Output */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -171,9 +180,21 @@ body {
 .canvas-box.live-box-small {
     border-color: #4f46e5;
     padding: 16px;
-    max-height: 25vh; /* Smaller height so it stays neatly at the top right */
+    max-height: 25vh;
 }
 
-.live-text-small {
-    font-size: 0.9rem; /* Scaled down text to fit the smaller live monitor view */
+.editor-output {
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
