@@ -53,7 +53,7 @@ body {
     min-height: 0;
 }
 
-/* Left Sidebar: Templates / Slides */
+/* Left Sidebar: Slide / Template Thumbnails */
 .templates-sidebar {
     flex: 1.2;
     background: #1e1e1e;
@@ -67,35 +67,38 @@ body {
 .template-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     overflow-y: auto;
+    padding-right: 4px;
 }
 
+/* Miniature 16:9 Slide Cards */
 .slide-thumb {
     width: 100%;
-    min-height: 60px;
-    background: #2d2d2d;
-    border: 1px solid #4b5563;
+    aspect-ratio: 16 / 9; /* Matches the PowerPoint widescreen shape */
+    background: #000;
+    border: 2px solid #4b5563;
     border-radius: 6px;
-    padding: 10px;
-    font-size: 0.85rem;
+    padding: 8px;
+    font-size: 0.65rem;
     color: #f3f4f6;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
+    overflow: hidden;
+    word-break: break-word;
     transition: all 0.2s;
 }
 
 .slide-thumb:hover {
     border-color: #4f46e5;
-    background: #374151;
 }
 
 .slide-thumb.active {
     border-color: #4f46e5;
-    background: #312e81;
+    box-shadow: 0 0 0 2px #4f46e5;
 }
 
 /* Center Column: Editor Screen */
