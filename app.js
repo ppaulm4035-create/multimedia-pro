@@ -44,10 +44,11 @@ function renderUI() {
 
   if (!centerEditorInput) return;
 
+  // Read text directly from contenteditable canvas
   if (activeEditingMode === 'MAIN') {
-    state.mainText = centerEditorInput.value;
+    state.mainText = centerEditorInput.textContent;
   } else {
-    state.bandText = centerEditorInput.value;
+    state.bandText = centerEditorInput.textContent;
   }
 
   if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
@@ -57,6 +58,7 @@ function renderUI() {
     return;
   }
 
+  // Update live screens so they mirror the exact content and proportions
   if (mainLivePreview) mainLivePreview.textContent = state.mainText;
   if (cpLivePreview) cpLivePreview.textContent = state.bandText;
   if (leftCpPreview) leftCpPreview.textContent = state.bandText;
@@ -70,18 +72,19 @@ btnSwitchView.addEventListener('click', () => {
     btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
     centerCanvasBox.classList.remove('landscape');
     centerCanvasBox.classList.add('portrait');
-    centerEditorInput.value = state.bandText;
+    centerEditorInput.textContent = state.bandText;
   } else {
     activeEditingMode = 'MAIN';
     editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
     btnSwitchView.textContent = 'SWITCH TO CP VIEW';
     centerCanvasBox.classList.remove('portrait');
     centerCanvasBox.classList.add('landscape');
-    centerEditorInput.value = state.mainText;
+    centerEditorInput.textContent = state.mainText;
   }
   renderUI();
 });
 
+// Real-time input listener for contenteditable
 centerEditorInput.addEventListener('input', () => {
   renderUI();
   localStorage.setItem(STATE_KEY, JSON.stringify(state));
@@ -109,7 +112,7 @@ function renderTemplates() {
         btnSwitchView.textContent = 'SWITCH TO CP VIEW';
         centerCanvasBox.classList.remove('portrait');
         centerCanvasBox.classList.add('landscape');
-        centerEditorInput.value = tpl.text;
+        centerEditorInput.textContent = tpl.text;
         state.mainText = tpl.text;
       } else {
         activeEditingMode = 'CP';
@@ -117,7 +120,7 @@ function renderTemplates() {
         btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
         centerCanvasBox.classList.remove('landscape');
         centerCanvasBox.classList.add('portrait');
-        centerEditorInput.value = tpl.text;
+        centerEditorInput.textContent = tpl.text;
         state.bandText = tpl.text;
       }
       renderUI();
@@ -127,8 +130,9 @@ function renderTemplates() {
   });
 }
 
+// Initial Setup
 if (centerEditorInput) {
-  centerEditorInput.value = state.mainText;
+  centerEditorInput.textContent = state.mainText;
 }
 
 renderTemplates();
