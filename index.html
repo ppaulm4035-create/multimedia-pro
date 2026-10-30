@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multimedia Presenter</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Include JSZip and Mammoth.js for reading PPTX and DOCX files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <!-- Top Toolbar with Import File Button -->
+        <!-- Top Toolbar with Slide Management Tools -->
         <header class="top-toolbar">
             <h2>Multimedia Presenter</h2>
             <div class="action-buttons">
-                <!-- Hidden file input triggered by custom button -->
-                <input type="file" id="fileImporter" accept=".pptx, .docx, .txt" style="display: none;">
-                <button id="btnImport" class="btn primary">📁 Import File (PPTX / DOCX)</button>
+                <button id="btnNewSlide" class="btn primary">➕ New Slide</button>
+                <button id="btnDuplicate" class="btn dark">📋 Duplicate</button>
+                <button id="btnDelete" class="btn danger">🗑️ Delete</button>
                 <button id="btnClear" class="btn warning">Clear</button>
                 <button id="btnBlack" class="btn dark">Blackout</button>
             </div>
@@ -35,7 +32,7 @@
             <div class="editor-section">
                 <div class="mode-label">EDITING SCREEN (MAIN)</div>
                 <div class="canvas-box">
-                    <textarea id="centerEditor" class="editor-input" placeholder="Paste or import your PowerPoint / Word project here..."></textarea>
+                    <textarea id="centerEditor" class="editor-input" placeholder="Type or paste slide content here..."></textarea>
                 </div>
             </div>
 
