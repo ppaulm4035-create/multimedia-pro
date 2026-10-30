@@ -14,7 +14,7 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: 320px 1fr 340px;
+  grid-template-columns: 320px 1fr 300px;
   height: 100vh;
   gap: 12px;
   padding: 12px;
@@ -25,10 +25,10 @@ body {
   background-color: #1e1e1e;
   border: 1px solid #333;
   border-radius: 8px;
-  padding: 15px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow-y: auto;
 }
 
@@ -42,17 +42,17 @@ body {
 }
 
 .search-results-list {
-  max-height: 120px;
+  max-height: 100px;
   overflow-y: auto;
   background: #141414;
   border: 1px solid #333;
   border-radius: 4px;
-  margin-top: 5px;
+  margin-top: 4px;
 }
 
 .search-result-item {
-  padding: 6px 10px;
-  font-size: 12px;
+  padding: 5px 8px;
+  font-size: 11px;
   cursor: pointer;
   border-bottom: 1px solid #222;
 }
@@ -64,35 +64,36 @@ body {
 
 .song-form input, .song-form select, .song-form textarea, .search-input-group input {
   width: 100%;
-  padding: 8px;
+  padding: 6px;
   background: #2a2a2a;
   border: 1px solid #444;
   color: #fff;
   border-radius: 4px;
-  font-size: 13px;
-  margin-bottom: 6px;
+  font-size: 12px;
+  margin-bottom: 4px;
 }
 
 .divider {
   border: 0;
   border-top: 1px solid #333;
-  margin: 5px 0;
+  margin: 4px 0;
 }
 
 .template-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   overflow-y: auto;
+  max-height: 150px;
 }
 
 .song-item {
-  padding: 10px;
+  padding: 8px;
   background: #2a2a2a;
   border: 1px solid #3a3a3a;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .song-item:hover {
@@ -105,10 +106,10 @@ body {
   background-color: #1e1e1e;
   border: 1px solid #333;
   border-radius: 8px;
-  padding: 15px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow-y: auto;
 }
 
@@ -120,14 +121,14 @@ body {
 
 .studio-action-bar {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .transition-btn {
   flex: 1;
   background: #f59e0b;
   color: #000;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .transition-btn:hover {
@@ -135,12 +136,12 @@ body {
 }
 
 .btn {
-  padding: 8px 14px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   text-decoration: none;
   text-align: center;
 }
@@ -152,7 +153,7 @@ body {
 .btn.link { background: #2a2a2a; color: #00ffcc; border: 1px solid #00ffcc; }
 
 .section-label {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #888;
@@ -161,22 +162,24 @@ body {
 
 .parts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  gap: 5px;
   background: #141414;
-  padding: 6px;
+  padding: 5px;
   border-radius: 6px;
   border: 1px solid #333;
+  max-height: 80px;
+  overflow-y: auto;
 }
 
 .part-btn {
-  padding: 8px;
+  padding: 6px;
   background: #2a2a2a;
   border: 1px solid #444;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
   text-align: center;
 }
@@ -188,25 +191,25 @@ body {
 .studio-editors-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .editor-column {
   background: #141414;
   border: 1px solid #333;
   border-radius: 6px;
-  padding: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .editor-header {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
-  padding: 4px 8px;
+  padding: 4px 6px;
   border-radius: 3px;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
   text-align: center;
 }
 
@@ -215,20 +218,21 @@ body {
 
 .editor-column textarea {
   width: 100%;
-  padding: 8px;
+  padding: 6px;
   background: #1e1e1e;
   color: #fff;
   border: 1px solid #444;
-  font-size: 13px;
+  font-size: 12px;
   border-radius: 4px;
-  resize: vertical;
+  resize: none;
+  height: 45px;
 }
 
-/* RIGHT PANEL: MONITORS */
+/* RIGHT PANEL & PREVIEW SCREENS */
 .right-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   overflow-y: auto;
 }
 
@@ -236,14 +240,14 @@ body {
   background-color: #1e1e1e;
   border: 1px solid #333;
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .monitor-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #aaa;
   text-transform: uppercase;
@@ -257,27 +261,44 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 10px;
+  padding: 8px;
   white-space: pre-wrap;
-  color: #fff;
+  overflow: hidden;
+  width: 100%;
 }
 
 .preview-screen.landscape {
-  height: 160px;
-  font-size: 15px;
+  height: 90px;
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: bold;
 }
 
 .preview-screen.portrait {
-  height: 240px;
-  width: 150px;
+  height: 120px;
+  width: 90px;
   margin: 0 auto;
-  font-size: 11px;
+  font-size: 9px;
   color: #00ffcc;
   font-family: monospace;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
   border-color: #00ffcc;
 }
 
-/* EXTERNAL SCREENS (display.html & band.html) */
+.mini-preview.landscape {
+  height: 55px;
+  font-size: 10px;
+}
+
+.mini-preview.portrait {
+  height: 70px;
+  width: 65px;
+  font-size: 8px;
+}
+
+/* EXTERNAL SCREENS (`display.html` & `band.html`) */
 body.display-screen, body.band-screen {
   background-color: #000;
   height: 100vh;
@@ -292,6 +313,7 @@ body.display-screen, body.band-screen {
 
 body.band-screen {
   justify-content: flex-start;
+  align-items: flex-start;
 }
 
 body.band-screen .header {
@@ -300,6 +322,8 @@ body.band-screen .header {
   margin-bottom: 20px;
   font-weight: bold;
   letter-spacing: 2px;
+  width: 100%;
+  text-align: center;
 }
 
 .projector-output {
@@ -308,15 +332,15 @@ body.band-screen .header {
   text-align: center;
   white-space: pre-wrap;
   line-height: 1.4;
+  font-weight: bold;
 }
 
 .band-output {
   color: #00ffcc;
   font-family: monospace;
-  font-size: 2vw;
+  font-size: 1.5vw;
   text-align: left;
   white-space: pre-wrap;
   width: 100%;
-  max-width: 800px;
   line-height: 1.5;
 }
