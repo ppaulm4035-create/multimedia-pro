@@ -41,7 +41,7 @@ function updateApp() {
 
     livePreviewBox.textContent = displayContent;
 
-    // 3. Render left templates as exact miniature clones
+    // 3. Render templates as literal HTML duplicates of the live monitor element
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -52,16 +52,24 @@ function renderTemplates() {
     templateBar.innerHTML = '';
 
     templates.forEach((tpl, index) => {
-        const card = document.createElement('div');
-        card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
-        
-        const thumbText = document.createElement('div');
-        thumbText.className = 'thumb-text';
-        thumbText.textContent = tpl.content;
-        
-        card.appendChild(thumbText);
+        // Outer wrapper for selection state
+        const wrapper = document.createElement('div');
+        wrapper.className = `slide-thumb-wrapper ${index === appState.activeSlideIndex ? 'active' : ''}`;
 
-        card.addEventListener('click', () => {
+        // Literal duplicate structure of the live monitor (.canvas-box.live-box-small)
+        const canvasBox = document.createElement('div');
+        canvasBox.className = 'canvas-box live-box-small';
+
+        // Literal duplicate structure of the text output (.editor-output.live-text-small)
+        const textOutput = document.createElement('div');
+        textOutput.className = 'editor-output live-text-small';
+        textOutput.textContent = tpl.content;
+
+        canvasBox.appendChild(textOutput);
+        wrapper.appendChild(canvasBox);
+
+        // Click to load slide into editing screen
+        wrapper.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
             if (centerEditor) {
@@ -70,7 +78,7 @@ function renderTemplates() {
             updateApp();
         });
 
-        templateBar.appendChild(card);
+        templateBar.appendChild(wrapper);
     });
 }
 
