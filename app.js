@@ -1,277 +1,175 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, sans-serif;
+const STATE_KEY = 'multimedia_studio_state';
+const TEMPLATES_KEY = 'multimedia_studio_templates';
+
+let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
+    activeSlideIndex: 0,
+    status: 'SHOW'
+};
+
+let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
+    { id: 1, title: 'Slide 1', content: "Sa 'Yong biyaya, ako\nay namamangha" },
+    { id: 2, title: 'Slide 2', content: "Sa 'Yong kalinga,\npanganib ay 'di banta" },
+    { id: 3, title: 'Slide 3', content: "Sa pag-ibig Mo,\npalaging ligtas ang puso" }
+];
+
+let contextTargetIndex = null;
+
+const templateBar = document.getElementById('templateBar');
+const centerEditor = document.getElementById('centerEditor');
+const livePreviewBox = document.getElementById('livePreviewBox');
+const btnClear = document.getElementById('btnClear');
+const btnBlack = document.getElementById('btnBlack');
+const contextMenu = document.getElementById('contextMenu');
+
+const ctxNew = document.getElementById('ctxNew');
+const ctxDuplicate = document.getElementById('ctxDuplicate');
+const ctxDelete = document.getElementById('ctxDelete');
+
+function updateApp() {
+    const currentText = centerEditor ? centerEditor.value : '';
+
+    if (templates[appState.activeSlideIndex]) {
+        templates[appState.activeSlideIndex].content = currentText;
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+    }
+
+    let displayContent = currentText;
+    if (appState.status === 'CLEAR') {
+        displayContent = '';
+        livePreviewBox.style.color = 'white';
+    } else if (appState.status === 'BLACK') {
+        displayContent = '';
+        livePreviewBox.style.color = 'transparent';
+    } else {
+        livePreviewBox.style.color = 'white';
+    }
+
+    livePreviewBox.textContent = displayContent;
+    renderTemplates();
+
+    localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
-body {
-    background-color: #121212;
-    color: #e0e0e0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+function renderTemplates() {
+    if (!templateBar) return;
+    templateBar.innerHTML = '';
+
+    templates.forEach((tpl, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = `template-card-wrapper ${index === appState.activeSlideIndex ? 'active' : ''}`;
+
+        const label = document.createElement('span');
+        label.textContent = `Slide ${index + 1}`;
+
+        const canvasContainer = document.createElement('div');
+        canvasContainer.className = 'thumb-canvas-container';
+
+        const virtualStage = document.createElement('div');
+        virtualStage.className = 'thumb-virtual-stage';
+        virtualStage.textContent = tpl.content;
+
+        canvasContainer.appendChild(virtualStage);
+        wrapper.appendChild(label);
+        wrapper.appendChild(canvasContainer);
+
+        setTimeout(() => {
+            const containerWidth = canvasContainer.clientWidth;
+            if (containerWidth > 0) {
+                const scaleVal = containerWidth / 800;
+                virtualStage.style.transform = `scale(${scaleVal})`;
+            }
+        }, 10);
+
+        wrapper.addEventListener('click', () => {
+            appState.activeSlideIndex = index;
+            appState.status = 'SHOW';
+            if (centerEditor) {
+                centerEditor.value = tpl.content;
+            }
+            updateApp();
+        });
+
+        wrapper.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextTargetIndex = index;
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        });
+
+        templateBar.appendChild(wrapper);
+    });
 }
 
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 16px;
-    gap: 16px;
+document.addEventListener('click', () => {
+    if (contextMenu) contextMenu.style.display = 'none';
+});
+
+ctxNew?.addEventListener('click', () => {
+    const newSlide = {
+        id: Date.now(),
+        title: `Slide ${templates.length + 1}`,
+        content: "New Slide Text"
+    };
+    templates.splice(contextTargetIndex + 1, 0, newSlide);
+    appState.activeSlideIndex = contextTargetIndex + 1;
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = newSlide.content;
+    updateApp();
+});
+
+ctxDuplicate?.addEventListener('click', () => {
+    const targetContent = templates[contextTargetIndex].content;
+    const duplicatedSlide = {
+        id: Date.now(),
+        title: `Slide ${templates.length + 1}`,
+        content: targetContent
+    };
+    templates.splice(contextTargetIndex + 1, 0, duplicatedSlide);
+    appState.activeSlideIndex = contextTargetIndex + 1;
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = duplicatedSlide.content;
+    updateApp();
+});
+
+ctxDelete?.addEventListener('click', () => {
+    if (templates.length <= 1) {
+        alert("You must keep at least one slide!");
+        return;
+    }
+    templates.splice(contextTargetIndex, 1);
+    if (appState.activeSlideIndex >= templates.length) {
+        appState.activeSlideIndex = templates.length - 1;
+    }
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = templates[appState.activeSlideIndex].content;
+    updateApp();
+});
+
+if (centerEditor) {
+    centerEditor.addEventListener('input', () => {
+        appState.status = 'SHOW';
+        updateApp();
+    });
 }
 
-.top-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1e1e1e;
-    padding: 12px 20px;
-    border-radius: 8px;
+btnClear?.addEventListener('click', () => {
+    appState.status = 'CLEAR';
+    if (centerEditor) centerEditor.value = '';
+    updateApp();
+});
+
+btnBlack?.addEventListener('click', () => {
+    appState.status = appState.status === 'BLACK' ? 'SHOW' : 'BLACK';
+    updateApp();
+});
+
+function init() {
+    if (templates.length > 0 && centerEditor) {
+        centerEditor.value = templates[appState.activeSlideIndex].content;
+    }
+    renderTemplates();
+    updateApp();
 }
 
-.action-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.btn.warning { background: #d97706; color: white; }
-.btn.dark { background: #374151; color: white; }
-
-.workspace {
-    display: flex;
-    flex: 1;
-    gap: 16px;
-    min-height: 0;
-}
-
-/* Left Sidebar: Templates */
-.templates-sidebar {
-    flex: 1.2;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.template-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-    padding-right: 4px;
-}
-
-.template-card-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 0.85rem;
-    color: #9ca3af;
-    background: #121212;
-    padding: 8px;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.template-card-wrapper:hover {
-    border-color: #4f46e5;
-}
-
-.template-card-wrapper.active {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
-}
-
-/* Center Column: Editing Screen */
-.editor-section {
-    flex: 3;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.mode-label {
-    font-size: 0.85rem;
-    color: #9ca3af;
-    font-weight: bold;
-}
-
-.canvas-box {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border: 3px solid #374151;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    overflow: hidden;
-    position: relative;
-    margin: auto;
-    max-height: 65vh;
-}
-
-.editor-input {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 2.2rem;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.4;
-    resize: none;
-    outline: none;
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-y: auto;
-}
-
-/* Right Column: Live Monitors Panel */
-.preview-panel {
-    flex: 1.2;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-}
-
-.preview-card {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-    color: #9ca3af;
-}
-
-/* Landscape Live Monitor Box */
-.canvas-box.live-box-small {
-    border-color: #4f46e5;
-    padding: 12px;
-    aspect-ratio: 16 / 9;
-    width: 100%;
-    max-height: none;
-    margin: 0;
-}
-
-.editor-output.live-text-small {
-    width: 100%;
-    height: 100%;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-word;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-/* Portrait Live Monitor Box (9:16 aspect ratio) */
-.canvas-box.portrait-box-small {
-    border-color: #06b6d4; /* Cyan accent border to distinguish portrait */
-    padding: 12px;
-    aspect-ratio: 9 / 16;
-    width: 70%; /* Naka-center at tamang laki para hindi masyadong sakop ang buong sidebar */
-    max-height: 28vh;
-    margin: 0 auto;
-}
-
-.editor-output.portrait-text-small {
-    width: 100%;
-    height: 100%;
-    color: #9ca3af;
-    font-size: 0.65rem;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.3;
-    white-space: pre-wrap;
-    word-break: break-word;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.thumb-canvas-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border: 2px solid #4b5563;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.thumb-virtual-stage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 800px;
-    height: 450px;
-    padding: 40px;
-    color: white;
-    font-size: 36px;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-word;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform-origin: top left;
-}
-
-/* --- POWERPOINT-STYLE RIGHT-CLICK CONTEXT MENU --- */
-.custom-context-menu {
-    position: absolute;
-    z-index: 1000;
-    background: #1e1e1e;
-    border: 1px solid #374151;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    width: 180px;
-    padding: 6px 0;
-}
-
-.menu-item {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-    color: #e0e0e0;
-    cursor: pointer;
-    user-select: none;
-}
-
-.menu-item:hover {
-    background: #4f46e5;
-    color: white;
-}
-
-.menu-item.delete-item:hover {
-    background: #b91c1c;
-}
+init();
