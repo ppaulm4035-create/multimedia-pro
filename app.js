@@ -44,7 +44,6 @@ function renderUI() {
 
   if (!centerEditorInput) return;
 
-  // Read text directly from contenteditable canvas
   if (activeEditingMode === 'MAIN') {
     state.mainText = centerEditorInput.textContent;
   } else {
@@ -58,7 +57,6 @@ function renderUI() {
     return;
   }
 
-  // Update live screens so they mirror the exact content and proportions
   if (mainLivePreview) mainLivePreview.textContent = state.mainText;
   if (cpLivePreview) cpLivePreview.textContent = state.bandText;
   if (leftCpPreview) leftCpPreview.textContent = state.bandText;
@@ -84,7 +82,6 @@ btnSwitchView.addEventListener('click', () => {
   renderUI();
 });
 
-// Real-time input listener for contenteditable
 centerEditorInput.addEventListener('input', () => {
   renderUI();
   localStorage.setItem(STATE_KEY, JSON.stringify(state));
@@ -130,7 +127,6 @@ function renderTemplates() {
   });
 }
 
-// Initial Setup
 if (centerEditorInput) {
   centerEditorInput.textContent = state.mainText;
 }
