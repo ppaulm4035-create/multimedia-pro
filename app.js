@@ -25,7 +25,7 @@ const cpLivePreview = document.getElementById('cpLivePreview');
 
 function updateApp() {
     if (centerEditorInput) {
-        appState.currentText = centerEditorInput.textContent;
+        appState.currentText = centerEditorInput.innerText;
     }
 
     let displayContent = appState.currentText;
@@ -59,7 +59,7 @@ function renderTemplates() {
             appState.currentText = tpl.content;
             appState.status = 'SHOW';
 
-            if (centerEditorInput) centerEditorInput.textContent = tpl.content;
+            if (centerEditorInput) centerEditorInput.innerText = tpl.content;
             
             if (tpl.view === 'CP') {
                 editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
@@ -83,6 +83,27 @@ function renderTemplates() {
 if (centerEditorInput) {
     centerEditorInput.addEventListener('input', () => {
         updateApp();
+    });
+
+    // Fix Enter key behavior to insert proper line breaks smoothly
+    centerEditorInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            
+            range.deleteContents();
+            const textNode = document.createTextNode('\n');
+            range.insertNode(textNode);
+            
+            range.setStartAfter(textNode);
+            range.setEndAfter(textNode);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            updateApp();
+        }
     });
 }
 
@@ -122,7 +143,7 @@ document.getElementById('btnBlack')?.addEventListener('click', () => {
 
 function init() {
     if (centerEditorInput) {
-        centerEditorInput.textContent = appState.currentText;
+        centerEditorInput.innerText = appState.currentText;
     }
     
     if (appState.viewMode === 'CP') {
