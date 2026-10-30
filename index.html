@@ -9,57 +9,26 @@
 <body>
   <div class="app-layout">
     
-    <!-- LEFT PANEL: Song Library & Visual Template Builder -->
+    <!-- LEFT PANEL: Templates Area & CP Mini Monitor -->
     <div class="left-panel">
-      <h3>Song Library & Templates</h3>
+      <h3>Templates Library</h3>
       
-      <!-- Web Lyric Search Section -->
-      <div class="search-box-section">
-        <label class="section-label">Web Lyric Search:</label>
-        <div class="search-input-group">
-          <input type="text" id="webSearchInput" placeholder="Song title & artist...">
-          <button id="searchWebBtn" class="btn primary">Search</button>
-        </div>
-        <div id="searchResults" class="search-results-list"></div>
+      <!-- Long Scrollable Template Bar (Landscape) - 60% height -->
+      <label class="section-label">Templates (Landscape):</label>
+      <div id="templateBar" class="template-bar-scrollable">
+        <!-- Scrollable templates will be injected here -->
       </div>
 
       <hr class="divider">
 
-      <!-- Visual Template Creator -->
-      <div class="song-form">
-        <input type="text" id="songTitleInput" placeholder="Song Title...">
-        <select id="partSelect">
-          <option value="INTRO">INTRO</option>
-          <option value="VERSE">VERSE</option>
-          <option value="CHORUS">CHORUS</option>
-          <option value="BRIDGE">BRIDGE</option>
-          <option value="REFRAIN">REFRAIN</option>
-          <option value="ADLIB">ADLIB</option>
-          <option value="OUTRO">OUTRO</option>
-        </select>
-        
-        <label class="section-label">Template Main Lyrics Preview:</label>
-        <div id="templateMainPreview" class="preview-screen landscape mini-preview">
-          <div class="preview-text">Drafting main lyrics...</div>
-        </div>
-        <textarea id="partLyricsInput" rows="2" placeholder="Type main lyrics here..."></textarea>
-        
-        <label class="section-label" style="margin-top: 5px;">Template Band Chords Preview:</label>
-        <div id="templateBandPreview" class="preview-screen portrait mini-preview">
-          <div class="preview-text">Drafting band chords...</div>
-        </div>
-        <textarea id="partBandInput" rows="2" placeholder="Type band chords here..."></textarea>
-
-        <button id="addPartBtn" class="btn primary" style="margin-top: 5px;">Add Part to Song</button>
-        <button id="saveSongBtn" class="btn success" style="margin-top: 5px;">Save Song</button>
+      <!-- CP Portrait Screen at the Bottom -->
+      <label class="section-label">CP Portrait Template View:</label>
+      <div id="leftCpPreview" class="preview-screen portrait">
+        <div class="preview-text">CP View...</div>
       </div>
-
-      <hr class="divider">
-      <h4>Saved Songs</h4>
-      <div id="songList" class="template-list"></div>
     </div>
 
-    <!-- CENTER PANEL: Studio Mode & Visual Monitors -->
+    <!-- CENTER PANEL: Studio Controller & Single Editor with Switch -->
     <div class="center-panel">
       <div class="panel-header">
         <h2>Studio Controller</h2>
@@ -76,58 +45,32 @@
         <button id="btnBlack" class="btn danger">BLACK</button>
       </div>
 
-      <!-- Song Parts Triggers -->
-      <label class="section-label">Song Parts (Synced Trigger):</label>
-      <div id="songPartTriggers" class="parts-grid"></div>
-
-      <!-- Dual Studio Visual Editors: Preview vs Program -->
-      <div class="studio-editors-grid">
-        <!-- PREVIEW BUFFER SCREENS -->
-        <div class="editor-column">
-          <div class="editor-header preview-hdr">PREVIEW BUFFER (Edit here first)</div>
-          
-          <label class="section-label">Main Projector Preview:</label>
-          <div id="previewMainScreen" class="preview-screen landscape">
-            <div class="preview-text">Drafting main lyrics...</div>
-          </div>
-          <textarea id="previewMainInput" rows="2" placeholder="Type/Edit main lyrics here..."></textarea>
-          
-          <label class="section-label" style="margin-top: 5px;">Band / CP Preview:</label>
-          <div id="previewBandScreen" class="preview-screen portrait">
-            <div class="preview-text">Drafting band chords...</div>
-          </div>
-          <textarea id="previewBandInput" rows="2" placeholder="Type/Edit band chords here..."></textarea>
+      <!-- Single Editing Screen with Main/CP Switch Button -->
+      <div class="editor-container">
+        <div class="editor-top-bar">
+          <span id="editingModeLabel" class="section-label">EDITING: MAIN VIEW (LANDSCAPE)</span>
+          <button id="btnSwitchView" class="btn primary">SWITCH TO CP VIEW</button>
         </div>
-
-        <!-- PROGRAM LIVE SCREENS -->
-        <div class="editor-column">
-          <div class="editor-header live-hdr">PROGRAM LIVE (Currently on Screen)</div>
-          
-          <label class="section-label">Active Main Output:</label>
-          <div id="liveMainScreen" class="preview-screen landscape">
-            <div class="preview-text">Live projector output...</div>
-          </div>
-          
-          <label class="section-label" style="margin-top: 5px;">Active Band Output:</label>
-          <div id="liveBandScreen" class="preview-screen portrait">
-            <div class="preview-text">Live band output...</div>
-          </div>
+        
+        <!-- Dynamic Editing Screen -->
+        <div id="centerEditorScreen" class="preview-screen landscape editable-screen">
+          <textarea id="centerEditorInput" placeholder="Type text here..."></textarea>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL: Full Reference Monitors -->
+    <!-- RIGHT PANEL: Live View Monitors -->
     <div class="right-panel">
       <div class="monitor-card">
-        <div class="monitor-title">Main Monitor (Projector)</div>
-        <div id="mainPreview" class="preview-screen landscape">
+        <div class="monitor-title">Live Main View (Landscape)</div>
+        <div id="mainLivePreview" class="preview-screen landscape">
           <div class="preview-text"></div>
         </div>
       </div>
 
       <div class="monitor-card">
-        <div class="monitor-title">Portrait CP Monitor</div>
-        <div id="mobilePreview" class="preview-screen portrait">
+        <div class="monitor-title">Live CP View (Portrait)</div>
+        <div id="cpLivePreview" class="preview-screen portrait">
           <div class="preview-text"></div>
         </div>
       </div>
