@@ -1,33 +1,31 @@
-const STATE_KEY = 'multimedia_clean_state';
-const TEMPLATES_KEY = 'multimedia_clean_templates';
+const STATE_KEY = 'multimedia_app_state';
+const TEMPLATES_KEY = 'multimedia_app_templates';
 
+// App state management
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-    currentText: 'Welcome to your Multimedia App',
-    viewMode: 'MAIN',
-    status: 'SHOW'
+    activeSlideIndex: 0,
+    status: 'SHOW' // 'SHOW', 'CLEAR', 'BLACK'
 };
 
+// Default template slides
 let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
-    { id: 1, title: 'Welcome Slide', view: 'MAIN', content: 'Welcome to your Multimedia App' },
-    { id: 2, title: 'Verse 1 (Main)', view: 'MAIN', content: 'Panginoon, kay tapat Mo' },
-    { id: 3, title: 'Verse 1 (Chords/CP)', view: 'CP', content: '[Verse 1]\nC   G   Am   F\nPanginoon, kay tapat Mo' },
-    { id: 4, title: 'Chorus (Main)', view: 'MAIN', content: 'Purihin ang Pangalan Mo' },
-    { id: 5, title: 'Chorus (Chords/CP)', view: 'CP', content: '[Chorus]\nF   G   C   Am\nPurihin ang Pangalan Mo' }
+    { id: 1, title: 'Welcome Slide', content: 'Welcome to the Presentation' },
+    { id: 2, title: 'Slide Two', content: 'Here is your second point or lyric.' },
+    { id: 3, title: 'Conclusion', content: 'Thank you for watching!' }
 ];
 
+// DOM Elements
 const templateBar = document.getElementById('templateBar');
-const centerEditorInput = document.getElementById('centerEditorInput');
-const centerCanvasBox = document.getElementById('centerCanvasBox');
-const editingModeLabel = document.getElementById('editingModeLabel');
-const btnSwitchView = document.getElementById('btnSwitchView');
-const mainLivePreview = document.getElementById('mainLivePreview');
-const cpLivePreview = document.getElementById('cpLivePreview');
+const centerEditor = document.getElementById('centerEditor');
+const livePreviewBox = document.getElementById('livePreviewBox');
+const btnShow = document.getElementById('btnShow');
+const btnClear = document.getElementById('btnClear');
+const btnBlack = document.getElementById('btnBlack');
 
-// Helper to convert HTML breaks to plain text with newlines for state/previews
-function getEditorText() {
-    if (!centerEditorInput) return '';
-    // Replace <br> tags with newlines, and strip other html tags safely
-    return centerEditorInput.innerHTML
+// Helper to convert HTML editor content safely to plain text / newlines
+function getEditorContent() {
+    if (!centerEditor) return '';
+    return centerEditor.innerHTML
         .replace(/<div><br><\/div>/gi, '\n')
         .replace(/<div>/gi, '\n')
         .replace(/<\/div>/gi, '')
@@ -35,62 +33,48 @@ function getEditorText() {
         .replace(/&nbsp;/g, ' ');
 }
 
-function setEditorText(text) {
-    if (!centerEditorInput) return;
-    // Convert newlines to innerHTML breaks so lines stack properly
-    centerEditorInput.innerHTML = text.replace(/\n/g, '<br>');
+function setEditorContent(text) {
+    if (!centerEditor) return;
+    centerEditor.innerHTML = text.replace(/\n/g, '<br>');
 }
 
+// Update UI and Live Previews
 function updateApp() {
-    if (centerEditorInput) {
-        appState.currentText = getEditorText();
+    // Save current editor text to active template
+    if (templates[appState.activeSlideIndex]) {
+        templates[appState.activeSlideIndex].content = getEditorContent();
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    let displayContent = appState.currentText;
+    // Determine output based on presentation status
+    let displayContent = templates[appState.activeSlideIndex]?.content || '';
     if (appState.status === 'CLEAR' || appState.status === 'BLACK') {
         displayContent = '';
     }
 
-    if (mainLivePreview) mainLivePreview.textContent = '';
-    if (cpLivePreview) cpLivePreview.textContent = '';
-
-    if (appState.viewMode === 'MAIN') {
-        if (mainLivePreview) mainLivePreview.textContent = displayContent;
-    } else {
-        if (cpLivePreview) cpLivePreview.textContent = displayContent;
+    // Render onto the Live Monitor preview box
+    if (livePreviewBox) {
+        livePreviewBox.textContent = displayContent;
     }
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
+// Render the left-side template / slide list
 function renderTemplates() {
     if (!templateBar) return;
     templateBar.innerHTML = '';
 
-    templates.forEach(tpl => {
+    templates.forEach((tpl, index) => {
         const card = document.createElement('div');
-        card.className = 'slide-thumb';
+        card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
         card.textContent = tpl.title;
 
         card.addEventListener('click', () => {
-            appState.viewMode = tpl.view;
-            appState.currentText = tpl.content;
+            appState.activeSlideIndex = index;
             appState.status = 'SHOW';
-
-            setEditorText(tpl.content);
-            
-            if (tpl.view === 'CP') {
-                editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
-                btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
-                centerCanvasBox.classList.remove('landscape');
-                centerCanvasBox.classList.add('portrait');
-            } else {
-                editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
-                btnSwitchView.textContent = 'SWITCH TO CP VIEW';
-                centerCanvasBox.classList.remove('portrait');
-                centerCanvasBox.classList.add('landscape');
-            }
-
+            setEditorContent(tpl.content);
+            renderTemplates();
             updateApp();
         });
 
@@ -98,56 +82,34 @@ function renderTemplates() {
     });
 }
 
-if (centerEditorInput) {
-    centerEditorInput.addEventListener('input', () => {
+// Event Listeners for live typing
+if (centerEditor) {
+    centerEditor.addEventListener('input', () => {
         updateApp();
     });
 }
 
-if (btnSwitchView) {
-    btnSwitchView.addEventListener('click', () => {
-        if (appState.viewMode === 'MAIN') {
-            appState.viewMode = 'CP';
-            editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
-            btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
-            centerCanvasBox.classList.remove('landscape');
-            centerCanvasBox.classList.add('portrait');
-        } else {
-            appState.viewMode = 'MAIN';
-            editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
-            btnSwitchView.textContent = 'SWITCH TO CP VIEW';
-            centerCanvasBox.classList.remove('portrait');
-            centerCanvasBox.classList.add('landscape');
-        }
-        updateApp();
-    });
-}
-
-document.getElementById('btnPushLive')?.addEventListener('click', () => {
+// Toolbar Action Controls
+btnShow?.addEventListener('click', () => {
     appState.status = 'SHOW';
     updateApp();
 });
 
-document.getElementById('btnClear')?.addEventListener('click', () => {
+btnClear?.addEventListener('click', () => {
     appState.status = 'CLEAR';
     updateApp();
 });
 
-document.getElementById('btnBlack')?.addEventListener('click', () => {
+btnBlack?.addEventListener('click', () => {
     appState.status = 'BLACK';
     updateApp();
 });
 
+// Initialization
 function init() {
-    setEditorText(appState.currentText);
-    
-    if (appState.viewMode === 'CP') {
-        editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
-        btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
-        centerCanvasBox.classList.remove('landscape');
-        centerCanvasBox.classList.add('portrait');
+    if (templates.length > 0) {
+        setEditorContent(templates[appState.activeSlideIndex].content);
     }
-
     renderTemplates();
     updateApp();
 }
