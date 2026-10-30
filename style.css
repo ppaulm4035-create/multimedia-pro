@@ -33,7 +33,7 @@ body {
 }
 
 .template-bar-scrollable {
-  height: 60%;
+  height: 55%;
   background: #141414;
   border: 1px solid #333;
   border-radius: 6px;
@@ -143,20 +143,58 @@ body {
   align-items: center;
 }
 
-.editable-screen {
-  position: relative;
-  width: 100%;
-  flex: 1;
+/* UNIFORM MONITOR BOX SIZES */
+.monitor-box {
   background: #000;
-  border: 2px solid #0070f3;
+  border: 2px solid #333;
   border-radius: 6px;
+  overflow: hidden;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
 }
 
-.editable-screen textarea {
+/* Landscape Proportion */
+.monitor-box.landscape {
+  height: 150px;
+  width: 100%;
+}
+
+/* Portrait Proportion (90 degrees flipped layout) */
+.monitor-box.portrait {
+  height: 220px;
+  width: 140px;
+  margin: 0 auto;
+  border-color: #00ffcc;
+}
+
+/* Inner Text Display for Previews */
+.preview-inner {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: pre-wrap;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.monitor-box.portrait .preview-inner {
+  font-family: monospace;
+  font-size: 11px;
+  color: #00ffcc;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Center Editor Textarea inside Box */
+.editor-box textarea {
   width: 100%;
   height: 100%;
   background: transparent;
@@ -166,17 +204,18 @@ body {
   text-align: center;
   resize: none;
   outline: none;
+  padding: 12px;
   white-space: pre-wrap;
 }
 
-.editable-screen.portrait textarea {
+.monitor-box.portrait.editor-box textarea {
   font-family: monospace;
   font-size: 11px;
-  text-align: left;
   color: #00ffcc;
+  text-align: left;
 }
 
-/* RIGHT PANEL & PREVIEW SCREENS */
+/* RIGHT PANEL */
 .right-panel {
   display: flex;
   flex-direction: column;
@@ -201,36 +240,39 @@ body {
   text-transform: uppercase;
 }
 
-.preview-screen {
-  background: #000;
-  border: 2px solid #333;
-  border-radius: 6px;
+/* EXTERNAL SCREENS (`display.html` & `band.html`) */
+body.display-screen, body.band-screen {
+  background-color: #000;
+  height: 100vh;
+  width: 100vw;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 10px;
-  white-space: pre-wrap;
   overflow: hidden;
-  width: 100%;
+  padding: 20px;
 }
 
-.preview-screen.landscape {
-  height: 140px;
-  font-size: 13px;
+body.band-screen {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.projector-output {
   color: #ffffff;
+  font-size: 4vw;
+  text-align: center;
+  white-space: pre-wrap;
+  line-height: 1.4;
   font-weight: bold;
 }
 
-.preview-screen.portrait {
-  height: 240px;
-  width: 140px;
-  margin: 0 auto;
-  font-size: 11px;
+.band-output {
   color: #00ffcc;
   font-family: monospace;
+  font-size: 1.5vw;
   text-align: left;
-  justify-content: flex-start;
-  align-items: flex-start;
-  border-color: #00ffcc;
+  white-space: pre-wrap;
+  width: 100%;
+  line-height: 1.5;
 }
