@@ -145,7 +145,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Live Monitor */
+/* Right Column: Live Monitors Panel */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -153,23 +153,25 @@ body {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    overflow-y: auto;
 }
 
 .preview-card {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    font-size: 0.85rem;
+    gap: 4px;
+    font-size: 0.8rem;
     color: #9ca3af;
 }
 
+/* Landscape Live Monitor Box */
 .canvas-box.live-box-small {
     border-color: #4f46e5;
-    padding: 16px;
-    max-height: 25vh;
+    padding: 12px;
     aspect-ratio: 16 / 9;
     width: 100%;
+    max-height: none;
     margin: 0;
 }
 
@@ -177,10 +179,36 @@ body {
     width: 100%;
     height: 100%;
     color: white;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 500;
     text-align: center;
     line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Portrait Live Monitor Box (9:16 aspect ratio) */
+.canvas-box.portrait-box-small {
+    border-color: #06b6d4; /* Cyan accent border to distinguish portrait */
+    padding: 12px;
+    aspect-ratio: 9 / 16;
+    width: 70%; /* Naka-center at tamang laki para hindi masyadong sakop ang buong sidebar */
+    max-height: 28vh;
+    margin: 0 auto;
+}
+
+.editor-output.portrait-text-small {
+    width: 100%;
+    height: 100%;
+    color: #9ca3af;
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.3;
     white-space: pre-wrap;
     word-break: break-word;
     display: flex;
