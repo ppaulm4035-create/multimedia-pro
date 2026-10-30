@@ -8,13 +8,16 @@ let state = JSON.parse(localStorage.getItem(STATE_KEY)) || {
 };
 
 let songs = JSON.parse(localStorage.getItem(SONGS_KEY)) || [];
-let currentSongParts = []; // Temporary parts for building a song
+let currentSongParts = [];
 
 // DOM Elements
-const activeMainInput = document.getElementById('activeMainInput');
-const activeBandInput = document.getElementById('activeBandInput');
+const previewMainInput = document.getElementById('previewMainInput');
+const previewBandInput = document.getElementById('previewBandInput');
+const liveMainDisplay = document.getElementById('liveMainDisplay');
+const liveBandDisplay = document.getElementById('liveBandDisplay');
 const mainPreviewText = document.querySelector('#mainPreview .preview-text');
 const mobilePreviewText = document.querySelector('#mobilePreview .preview-text');
+
 const songTitleInput = document.getElementById('songTitleInput');
 const partSelect = document.getElementById('partSelect');
 const partLyricsInput = document.getElementById('partLyricsInput');
@@ -23,6 +26,10 @@ const addPartBtn = document.getElementById('addPartBtn');
 const saveSongBtn = document.getElementById('saveSongBtn');
 const songList = document.getElementById('songList');
 const songPartTriggers = document.getElementById('songPartTriggers');
+
+const webSearchInput = document.getElementById('webSearchInput');
+const searchWebBtn = document.getElementById('searchWebBtn');
+const searchResults = document.getElementById('searchResults');
 
 function broadcastState(newState) {
   state = { ...state, ...newState };
@@ -41,58 +48,79 @@ function renderControllerUI() {
     bandDisplay = '';
   }
 
+  liveMainDisplay.value = state.mainText;
+  liveBandDisplay.value = state.bandText;
+
   mainPreviewText.textContent = mainDisplay;
   mobilePreviewText.textContent = bandDisplay;
 }
 
-if (activeMainInput && activeBandInput) {
-  activeMainInput.value = state.mainText;
-  activeBandInput.value = state.bandText;
+if (previewMainInput && previewBandInput) {
+  // Initialize with current state
+  previewMainInput.value = state.mainText;
+  previewBandInput.value = state.bandText;
 
-  // Live input sync
-  activeMainInput.addEventListener('input', (e) => {
-    broadcastState({ mainText: e.target.value, mode: 'SHOW' });
-  });
-
-  activeBandInput.addEventListener('input', (e) => {
-    broadcastState({ bandText: e.target.value, mode: 'SHOW' });
-  });
-
-  // Edit Mode Focus
-  document.getElementById('btnEdit').addEventListener('click', () => {
-    activeMainInput.focus();
-  });
-
-  document.getElementById('btnShow').addEventListener('click', () => {
-    broadcastState({ 
-      mainText: activeMainInput.value, 
-      bandText: activeBandInput.value, 
-      mode: 'SHOW' 
+  // PUSH TO LIVE (OBS Studio Transition style)
+  document.getElementById('btnPushLive').addEventListener('click', () => {
+    broadcastState({
+      mainText: previewMainInput.value,
+      bandText: previewBandInput.value,
+      mode: 'SHOW'
     });
   });
 
   document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
   document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
 
-  // Add Part to Current Builder
+  // Web Search Fetcher (Simulated open lyrics lookup via public API/fallback)
+  searchWebBtn.addEventListener('click', async () => {
+    const query = webSearchInput.value.trim();
+    if (!query) return;
+
+    searchResults.innerHTML = '<div class="search-result-item">Searching web...</div>';
+    try {
+      // Using public lyrics endpoint simulation
+      const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(query)}`);
+      const data = await res.json();
+      
+      searchResults.innerHTML = '';
+      if (data.lyrics) {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = `Found: ${query}`;
+        item.addEventListener('click', () => {
+          songTitleInput.value = query;
+          partLyricsInput.value = data.lyrics;
+          partBandInput.value = data.lyrics;
+          alert('Lyrics loaded to Song Builder!');
+        });
+        searchResults.appendChild(item);
+      } else {
+        searchResults.innerHTML = '<div class="search-result-item">No lyrics found. Paste manually below.</div>';
+      }
+    } catch (e) {
+      searchResults.innerHTML = '<div class="search-result-item">Search error or offline. Use manual entry.</div>';
+    }
+  });
+
+  // Add Song Part
   addPartBtn.addEventListener('click', () => {
     const type = partSelect.value;
     const lyrics = partLyricsInput.value.trim();
     const bandNotes = partBandInput.value.trim();
 
-    if (!lyrics) return alert('Lagyan ng lyrics ang part na ito!');
+    if (!lyrics) return alert('Lagyan ng lyrics!');
 
     currentSongParts.push({ type, lyrics, bandNotes });
     partLyricsInput.value = '';
     partBandInput.value = '';
-    alert(`Naidagdag ang ${type}! Pindutin ang 'Save Full Song' kapag tapos na.`);
     renderTriggers(currentSongParts);
   });
 
   // Save Full Song
   saveSongBtn.addEventListener('click', () => {
     const title = songTitleInput.value.trim();
-    if (!title || currentSongParts.length === 0) return alert('Maglagay ng Song Title at kahit isang Part!');
+    if (!title || currentSongParts.length === 0) return alert('Lagyan ng Title at Parts!');
 
     songs.push({ id: Date.now(), title, parts: [...currentSongParts] });
     localStorage.setItem(SONGS_KEY, JSON.stringify(songs));
@@ -100,7 +128,7 @@ if (activeMainInput && activeBandInput) {
     currentSongParts = [];
     songPartTriggers.innerHTML = '';
     renderSongList();
-    alert('Matagumpay na na-save ang kanta!');
+    alert('Na-save na ang kanta!');
   });
 
   function renderSongList() {
@@ -109,13 +137,9 @@ if (activeMainInput && activeBandInput) {
       const item = document.createElement('div');
       item.className = 'song-item';
       item.textContent = song.title;
-      item.addEventListener('click', () => loadSongToTriggers(song));
+      item.addEventListener('click', () => renderTriggers(song.parts));
       songList.appendChild(item);
     });
-  }
-
-  function loadSongToTriggers(song) {
-    renderTriggers(song.parts);
   }
 
   function renderTriggers(parts) {
@@ -124,14 +148,10 @@ if (activeMainInput && activeBandInput) {
       const btn = document.createElement('button');
       btn.className = 'part-btn';
       btn.textContent = part.type;
+      // Studio Mode behavior: Clicking trigger loads into PREVIEW first, or direct push if wanted
       btn.addEventListener('click', () => {
-        activeMainInput.value = part.lyrics;
-        activeBandInput.value = part.bandNotes || part.lyrics; // Fallback to lyrics if no specific band notes
-        broadcastState({ 
-          mainText: activeMainInput.value, 
-          bandText: activeBandInput.value, 
-          mode: 'SHOW' 
-        });
+        previewMainInput.value = part.lyrics;
+        previewBandInput.value = part.bandNotes || part.lyrics;
       });
       songPartTriggers.appendChild(btn);
     });
