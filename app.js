@@ -18,7 +18,7 @@ let activeEditingMode = 'MAIN'; // 'MAIN' or 'CP'
 
 // DOM Elements
 const centerEditorInput = document.getElementById('centerEditorInput');
-const centerEditorWrapper = document.getElementById('centerEditorWrapper');
+const centerCanvasBox = document.getElementById('centerCanvasBox');
 const editingModeLabel = document.getElementById('editingModeLabel');
 const btnSwitchView = document.getElementById('btnSwitchView');
 
@@ -35,20 +35,15 @@ function broadcastState(newState) {
 }
 
 function renderUI() {
-  // 1. External Display Windows (`display.html` or `band.html`)
   if (lyricsDisplay) {
     let displayContent = document.body.classList.contains('band-screen') ? state.bandText : state.mainText;
-    if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
-      displayContent = '';
-    }
+    if (state.mode === 'BLACK' || state.mode === 'CLEAR') displayContent = '';
     lyricsDisplay.textContent = displayContent;
     return;
   }
 
-  // 2. Controller UI Sync
   if (!centerEditorInput) return;
 
-  // Save current textarea content to active state
   if (activeEditingMode === 'MAIN') {
     state.mainText = centerEditorInput.value;
   } else {
@@ -62,27 +57,26 @@ function renderUI() {
     return;
   }
 
-  // Update Live Previews on the right and left
   if (mainLivePreview) mainLivePreview.textContent = state.mainText;
   if (cpLivePreview) cpLivePreview.textContent = state.bandText;
   if (leftCpPreview) leftCpPreview.textContent = state.bandText;
 }
 
-// Switch View (Landscape Main <-> Portrait CP)
+// Switch between Main (Landscape) and CP (Portrait)
 btnSwitchView.addEventListener('click', () => {
   if (activeEditingMode === 'MAIN') {
     activeEditingMode = 'CP';
     editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
     btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
-    centerEditorWrapper.classList.remove('landscape');
-    centerEditorWrapper.classList.add('portrait');
+    centerCanvasBox.classList.remove('landscape');
+    centerCanvasBox.classList.add('portrait');
     centerEditorInput.value = state.bandText;
   } else {
     activeEditingMode = 'MAIN';
     editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
     btnSwitchView.textContent = 'SWITCH TO CP VIEW';
-    centerEditorWrapper.classList.remove('portrait');
-    centerEditorWrapper.classList.add('landscape');
+    centerCanvasBox.classList.remove('portrait');
+    centerCanvasBox.classList.add('landscape');
     centerEditorInput.value = state.mainText;
   }
   renderUI();
@@ -93,7 +87,6 @@ centerEditorInput.addEventListener('input', () => {
   localStorage.setItem(STATE_KEY, JSON.stringify(state));
 });
 
-// Action Buttons
 document.getElementById('btnPushLive').addEventListener('click', () => {
   renderUI();
   broadcastState({ mode: 'SHOW' });
@@ -102,29 +95,28 @@ document.getElementById('btnPushLive').addEventListener('click', () => {
 document.getElementById('btnClear').addEventListener('click', () => broadcastState({ mode: 'CLEAR' }));
 document.getElementById('btnBlack').addEventListener('click', () => broadcastState({ mode: 'BLACK' }));
 
-// Render Scrollable Templates Bar
 function renderTemplates() {
   if (!templateBar) return;
   templateBar.innerHTML = '';
   templates.forEach((tpl) => {
     const card = document.createElement('div');
-    card.className = 'template-card-item';
+    card.className = 'slide-thumb';
     card.textContent = tpl.title;
     card.addEventListener('click', () => {
       if (tpl.type === 'main') {
         activeEditingMode = 'MAIN';
         editingModeLabel.textContent = 'EDITING: MAIN VIEW (LANDSCAPE)';
         btnSwitchView.textContent = 'SWITCH TO CP VIEW';
-        centerEditorWrapper.classList.remove('portrait');
-        centerEditorWrapper.classList.add('landscape');
+        centerCanvasBox.classList.remove('portrait');
+        centerCanvasBox.classList.add('landscape');
         centerEditorInput.value = tpl.text;
         state.mainText = tpl.text;
       } else {
         activeEditingMode = 'CP';
         editingModeLabel.textContent = 'EDITING: CP VIEW (PORTRAIT)';
         btnSwitchView.textContent = 'SWITCH TO MAIN VIEW';
-        centerEditorWrapper.classList.remove('landscape');
-        centerEditorWrapper.classList.add('portrait');
+        centerCanvasBox.classList.remove('landscape');
+        centerCanvasBox.classList.add('portrait');
         centerEditorInput.value = tpl.text;
         state.bandText = tpl.text;
       }
@@ -135,7 +127,6 @@ function renderTemplates() {
   });
 }
 
-// Initial Setup
 if (centerEditorInput) {
   centerEditorInput.value = state.mainText;
 }
