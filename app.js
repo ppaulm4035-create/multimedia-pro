@@ -1,21 +1,26 @@
 const STATE_KEY = 'multimedia_studio_state';
+const TEMPLATES_KEY = 'multimedia_studio_templates';
 
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-    editingContent: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta",
-    liveContent: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta",
-    isLive: true,
-    status: 'SHOW' // 'SHOW', 'CLEAR', 'BLACK'
+    activeSlideIndex: 0,
+    status: 'SHOW'
 };
 
+let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
+    { id: 1, title: 'Slide 1', content: "Sa 'Yong biyaya, ako\nay namamangha" },
+    { id: 2, title: 'Slide 2', content: "Sa 'Yong kalinga,\npanganib ay 'di banta" },
+    { id: 3, title: 'Slide 3', content: "Sa pag-ibig Mo,\npalaging ligtas ang puso" }
+];
+
+const templateBar = document.getElementById('templateBar');
 const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
-const btnGoLive = document.getElementById('btnGoLive');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
 
-function getEditorContent(el) {
-    if (!el) return '';
-    return el.innerHTML
+function getEditorContent() {
+    if (!centerEditor) return '';
+    return centerEditor.innerHTML
         .replace(/<div><br><\/div>/gi, '\n')
         .replace(/<div>/gi, '\n')
         .replace(/<\/div>/gi, '')
@@ -23,65 +28,72 @@ function getEditorContent(el) {
         .replace(/&nbsp;/g, ' ');
 }
 
-function setContent(el, text) {
-    if (!el) return;
-    el.innerHTML = text.replace(/\n/g, '<br>');
+function setEditorContent(text) {
+    if (!centerEditor) return;
+    centerEditor.innerHTML = text.replace(/\n/g, '<br>');
 }
 
+// Update live monitor and active template instantly as you type
 function updateApp() {
-    // 1. Keep track of what's typed in the editing workspace
-    appState.editingContent = getEditorContent(centerEditor);
+    const currentText = getEditorContent();
 
-    // 2. Determine what displays on the live monitor based on live state / blackout / clear
-    let displayOutput = appState.liveContent;
-    if (appState.status === 'CLEAR') {
-        displayOutput = '';
-    } else if (appState.status === 'BLACK') {
-        displayOutput = '';
-        livePreviewBox.style.backgroundColor = '#000';
+    // 1. Sync current text to active slide template
+    if (templates[appState.activeSlideIndex]) {
+        templates[appState.activeSlideIndex].content = currentText;
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    setContent(livePreviewBox, displayOutput);
-
-    if (appState.status === 'BLACK') {
+    // 2. Determine display output for live monitor and clear/blackout states
+    let displayContent = currentText;
+    if (appState.status === 'CLEAR') {
+        displayContent = '';
+        livePreviewBox.style.color = 'white';
+    } else if (appState.status === 'BLACK') {
+        displayContent = '';
         livePreviewBox.style.color = 'transparent';
     } else {
         livePreviewBox.style.color = 'white';
-        livePreviewBox.style.backgroundColor = 'transparent';
     }
 
-    // Update GO LIVE button visual status
-    if (appState.isLive) {
-        btnGoLive.classList.add('live-active');
-        btnGoLive.textContent = '🟢 LIVE (PUSHED)';
-    } else {
-        btnGoLive.classList.remove('live-active');
-        btnGoLive.textContent = '🔴 GO LIVE (PUSH)';
-    }
+    livePreviewBox.textContent = displayContent;
+
+    // 3. Render left template thumbnails as instant mirrors
+    renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
-// User types in center editor (Does NOT push to live monitor automatically)
-if (centerEditor) {
-    centerEditor.addEventListener('input', () => {
-        // Just saves local workspace state
-        appState.editingContent = getEditorContent(centerEditor);
-        localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+function renderTemplates() {
+    if (!templateBar) return;
+    templateBar.innerHTML = '';
+
+    templates.forEach((tpl, index) => {
+        const card = document.createElement('div');
+        card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
+        
+        // Instant live mirror text inside the thumbnail
+        card.textContent = tpl.content;
+
+        card.addEventListener('click', () => {
+            appState.activeSlideIndex = index;
+            appState.status = 'SHOW';
+            setEditorContent(tpl.content);
+            updateApp();
+        });
+
+        templateBar.appendChild(card);
     });
 }
 
-// GO LIVE BUTTON: Pushes the editing screen content out to the Live Monitor
-btnGoLive?.addEventListener('click', () => {
-    appState.liveContent = getEditorContent(centerEditor);
-    appState.status = 'SHOW';
-    appState.isLive = true;
-    updateApp();
-});
+if (centerEditor) {
+    centerEditor.addEventListener('input', () => {
+        appState.status = 'SHOW';
+        updateApp();
+    });
+}
 
 btnClear?.addEventListener('click', () => {
     appState.status = 'CLEAR';
-    appState.liveContent = '';
     updateApp();
 });
 
@@ -91,8 +103,10 @@ btnBlack?.addEventListener('click', () => {
 });
 
 function init() {
-    setContent(centerEditor, appState.editingContent);
-    setContent(livePreviewBox, appState.liveContent);
+    if (templates.length > 0) {
+        setEditorContent(templates[appState.activeSlideIndex].content);
+    }
+    renderTemplates();
     updateApp();
 }
 
