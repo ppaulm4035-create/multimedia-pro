@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multimedia Presentation App</title>
+    <title>Multimedia Presenter</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,26 +20,28 @@
 
         <!-- 3-Column Studio Workspace -->
         <div class="workspace">
-            <!-- Left Column: Slide Thumbnails -->
+            <!-- Left Column: Templates (Mirrored slides) -->
             <div class="templates-sidebar">
-                <h3>Slides</h3>
+                <h3>Templates</h3>
                 <div id="templateBar" class="template-list"></div>
             </div>
 
-            <!-- Center Column: Editing Canvas -->
+            <!-- Center Column: Editing Screen (The Main Source) -->
             <div class="editor-section">
-                <div class="mode-label">EDITING SCREEN</div>
+                <div class="mode-label">EDITING SCREEN (MAIN)</div>
                 <div class="canvas-box">
-                    <div id="centerEditor" class="editor-input" contenteditable="true" placeholder="Type slide content..."></div>
+                    <div id="centerEditor" class="editor-input" contenteditable="true" placeholder="Type presentation content here..."></div>
                 </div>
             </div>
 
-            <!-- Right Column: Live Monitor Preview -->
+            <!-- Right Column: Live Monitor (Exact Mirror) -->
             <div class="preview-panel">
                 <h3>Live Monitor</h3>
                 <div class="preview-card">
                     <span>Main Display Output</span>
-                    <div id="livePreviewBox" class="preview-screen"></div>
+                    <div class="preview-canvas-box">
+                        <div id="livePreviewBox" class="preview-output"></div>
+                    </div>
                 </div>
             </div>
         </div>
