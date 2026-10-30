@@ -17,8 +17,9 @@ const centerEditor = document.getElementById('centerEditor');
 const livePreviewBox = document.getElementById('livePreviewBox');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
-const btnImport = document.getElementById('btnImport');
-const fileImporter = document.getElementById('fileImporter');
+const btnNewSlide = document.getElementById('btnNewSlide');
+const btnDuplicate = document.getElementById('btnDuplicate');
+const btnDelete = document.getElementById('btnDelete');
 
 function updateApp() {
     const currentText = centerEditor ? centerEditor.value : '';
@@ -88,102 +89,51 @@ function renderTemplates() {
     });
 }
 
-// --- SMARTER PPTX PARSER (Preserves Titles & Paragraphs) ---
-btnImport?.addEventListener('click', () => {
-    fileImporter.click();
+// --- NATIVE SLIDE MANAGEMENT TOOLS ---
+
+// 1. New Slide
+btnNewSlide?.addEventListener('click', () => {
+    const newSlide = {
+        id: Date.now(),
+        title: `Slide ${templates.length + 1}`,
+        content: "New Slide Text"
+    };
+    templates.splice(appState.activeSlideIndex + 1, 0, newSlide);
+    appState.activeSlideIndex++;
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = newSlide.content;
+    updateApp();
 });
 
-fileImporter?.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const fileName = file.name.toLowerCase();
-
-    try {
-        if (fileName.endsWith('.txt')) {
-            const text = await file.text();
-            loadSlidesFromText(text);
-        } else if (fileName.endsWith('.docx')) {
-            const arrayBuffer = await file.arrayBuffer();
-            const result = await mammoth.extractRawText({ arrayBuffer });
-            loadSlidesFromText(result.value);
-        } else if (fileName.endsWith('.pptx')) {
-            const arrayBuffer = await file.arrayBuffer();
-            const zip = await JSZip.loadAsync(arrayBuffer);
-            
-            let slideTexts = [];
-            let slideIndex = 1;
-
-            while (zip.file(`ppt/slides/slide${slideIndex}.xml`)) {
-                const xmlContent = await zip.file(`ppt/slides/slide${slideIndex}.xml`).async('text');
-                
-                // Extract paragraphs (<a:p>) to preserve structural line spacing
-                const paragraphMatches = xmlContent.match(/<a:p[\s\>](.*?)<\/a:p>/g);
-                let slideLines = [];
-
-                if (paragraphMatches) {
-                    paragraphMatches.forEach(p => {
-                        const textChunks = p.match(/<a:t[^>]*>(.*?)<\/a:t>/g);
-                        if (textChunks) {
-                            const lineText = textChunks.map(t => t.replace(/<[^>]+>/g, '')).join('');
-                            if (lineText.trim() !== '') {
-                                slideLines.push(lineText.trim());
-                            }
-                        }
-                    });
-                }
-
-                if (slideLines.length > 0) {
-                    // Join paragraphs with proper line breaks so titles and bodies stay separated
-                    slideTexts.push(slideLines.join('\n\n'));
-                }
-                slideIndex++;
-            }
-
-            if (slideTexts.length > 0) {
-                templates = slideTexts.map((text, idx) => ({
-                    id: idx + 1,
-                    title: `Slide ${idx + 1}`,
-                    content: text
-                }));
-                appState.activeSlideIndex = 0;
-                appState.status = 'SHOW';
-                if (centerEditor) centerEditor.value = templates[0].content;
-                localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
-                updateApp();
-                alert(`Successfully imported ${slideTexts.length} slides with layout structure!`);
-            } else {
-                alert('No readable slide text found in this PowerPoint file.');
-            }
-        } else {
-            alert('Please select a valid .pptx, .docx, or .txt file.');
-        }
-    } catch (err) {
-        console.error(err);
-        alert('Error reading file. Please try another file.');
-    }
-
-    fileImporter.value = '';
+// 2. Duplicate Slide
+btnDuplicate?.addEventListener('click', () => {
+    const currentContent = centerEditor ? centerEditor.value : '';
+    const duplicatedSlide = {
+        id: Date.now(),
+        title: `Slide ${templates.length + 1}`,
+        content: currentContent
+    };
+    templates.splice(appState.activeSlideIndex + 1, 0, duplicatedSlide);
+    appState.activeSlideIndex++;
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = duplicatedSlide.content;
+    updateApp();
 });
 
-function loadSlidesFromText(fullText) {
-    const chunks = fullText.split(/\n\s*\n/).filter(c => c.trim() !== '');
-    if (chunks.length > 0) {
-        templates = chunks.map((chunk, idx) => ({
-            id: idx + 1,
-            title: `Slide ${idx + 1}`,
-            content: chunk.trim()
-        }));
-        appState.activeSlideIndex = 0;
-        appState.status = 'SHOW';
-        if (centerEditor) centerEditor.value = templates[0].content;
-        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
-        updateApp();
-        alert(`Successfully imported ${chunks.length} slides!`);
-    } else {
-        alert('The document appears to be empty.');
+// 3. Delete Slide
+btnDelete?.addEventListener('click', () => {
+    if (templates.length <= 1) {
+        alert("You must keep at least one slide!");
+        return;
     }
-}
+    templates.splice(appState.activeSlideIndex, 1);
+    if (appState.activeSlideIndex >= templates.length) {
+        appState.activeSlideIndex = templates.length - 1;
+    }
+    appState.status = 'SHOW';
+    if (centerEditor) centerEditor.value = templates[appState.activeSlideIndex].content;
+    updateApp();
+});
 
 if (centerEditor) {
     centerEditor.addEventListener('input', () => {
