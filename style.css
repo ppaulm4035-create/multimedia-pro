@@ -72,47 +72,23 @@ body {
     padding-right: 4px;
 }
 
-/* Template slide thumbnail uses exact same 16:9 canvas box style as live monitor */
-.slide-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border: 2px solid #4b5563;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
+/* Template item wrapper that makes the whole thumbnail clickable */
+.slide-thumb-wrapper {
+    background: #121212;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px;
     cursor: pointer;
-    overflow: hidden;
-    position: relative;
     transition: all 0.2s;
 }
 
-.slide-thumb:hover {
+.slide-thumb-wrapper:hover {
     border-color: #4f46e5;
 }
 
-.slide-thumb.active {
+.slide-thumb-wrapper.active {
     border-color: #4f46e5;
-    box-shadow: 0 0 0 2px #4f46e5;
-}
-
-/* Thumbnail text styled identically to live monitor output, just scaled down */
-.thumb-text {
-    width: 100%;
-    height: 100%;
-    color: white;
-    font-size: 0.35rem; /* Proportional miniature font size */
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-word;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.4);
 }
 
 /* Center Column: Editing Screen */
@@ -165,7 +141,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Live Monitor */
+/* Right Column: Live Monitor & Duplicate Thumbnail Canvas Box */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -184,17 +160,21 @@ body {
     color: #9ca3af;
 }
 
+/* Live monitor box structure used identically for thumbnails */
 .canvas-box.live-box-small {
     border-color: #4f46e5;
-    padding: 16px;
-    max-height: 25vh;
+    padding: 12px;
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    margin: 0;
 }
 
-.editor-output {
+.editor-output.live-text-small {
     width: 100%;
     height: 100%;
     color: white;
-    font-size: 0.85rem;
+    font-size: 0.55rem; /* Scaled down perfectly to match thumbnail size */
     font-weight: 500;
     text-align: center;
     line-height: 1.4;
