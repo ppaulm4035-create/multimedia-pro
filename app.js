@@ -13,10 +13,17 @@ let currentSongParts = [];
 // DOM Elements (Controller)
 const previewMainInput = document.getElementById('previewMainInput');
 const previewBandInput = document.getElementById('previewBandInput');
-const liveMainDisplay = document.getElementById('liveMainDisplay');
-const liveBandDisplay = document.getElementById('liveBandDisplay');
+
+const previewMainScreenText = document.querySelector('#previewMainScreen .preview-text');
+const previewBandScreenText = document.querySelector('#previewBandScreen .preview-text');
+const liveMainScreenText = document.querySelector('#liveMainScreen .preview-text');
+const liveBandScreenText = document.querySelector('#liveBandScreen .preview-text');
+
 const mainPreviewText = document.querySelector('#mainPreview .preview-text');
 const mobilePreviewText = document.querySelector('#mobilePreview .preview-text');
+
+const templateMainPreviewText = document.querySelector('#templateMainPreview .preview-text');
+const templateBandPreviewText = document.querySelector('#templateBandPreview .preview-text');
 
 const songTitleInput = document.getElementById('songTitleInput');
 const partSelect = document.getElementById('partSelect');
@@ -39,7 +46,7 @@ function broadcastState(newState) {
 }
 
 function renderUI() {
-  // 1. If we are on external Display/Band windows
+  // 1. External Windows (`display.html` or `band.html`)
   if (lyricsDisplay) {
     let displayContent = document.body.classList.contains('band-screen') ? state.bandText : state.mainText;
     if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
@@ -49,25 +56,38 @@ function renderUI() {
     return;
   }
 
-  // 2. Otherwise, we are on the Studio Controller UI
-  if (!mainPreviewText || !mobilePreviewText) return;
+  // 2. Studio Controller Screens & Monitors
+  if (!previewMainInput) return;
 
-  let mainDisplay = state.mainText;
-  let bandDisplay = state.bandText;
+  let mainPreviewVal = previewMainInput.value;
+  let bandPreviewVal = previewBandInput.value;
+
+  // Update Template Builder visual screens in real-time
+  if (templateMainPreviewText) templateMainPreviewText.textContent = partLyricsInput.value || 'Drafting main lyrics...';
+  if (templateBandPreviewText) templateBandPreviewText.textContent = partBandInput.value || 'Drafting band chords...';
+
+  // Update Preview Buffer screens
+  if (previewMainScreenText) previewMainScreenText.textContent = mainPreviewVal;
+  if (previewBandScreenText) previewBandScreenText.textContent = bandPreviewVal;
 
   if (state.mode === 'BLACK' || state.mode === 'CLEAR') {
-    mainDisplay = '';
-    bandDisplay = '';
+    if (liveMainScreenText) liveMainScreenText.textContent = '';
+    if (liveBandScreenText) liveBandScreenText.textContent = '';
+    if (mainPreviewText) mainPreviewText.textContent = '';
+    if (mobilePreviewText) mobilePreviewText.textContent = '';
+    return;
   }
 
-  liveMainDisplay.value = state.mainText;
-  liveBandDisplay.value = state.bandText;
+  // Update Live Program screens
+  if (liveMainScreenText) liveMainScreenText.textContent = state.mainText;
+  if (liveBandScreenText) liveBandScreenText.textContent = state.bandText;
 
-  mainPreviewText.textContent = mainDisplay;
-  mobilePreviewText.textContent = bandDisplay;
+  // Update Right Reference monitors
+  if (mainPreviewText) mainPreviewText.textContent = state.mainText;
+  if (mobilePreviewText) mobilePreviewText.textContent = state.bandText;
 }
 
-// Listen for updates from other tabs/windows if running concurrently
+// Listen for updates from other tabs/windows
 window.addEventListener('storage', (e) => {
   if (e.key === STATE_KEY) {
     state = JSON.parse(e.newValue) || state;
@@ -79,6 +99,11 @@ window.addEventListener('storage', (e) => {
 if (previewMainInput && previewBandInput) {
   previewMainInput.value = state.mainText;
   previewBandInput.value = state.bandText;
+
+  previewMainInput.addEventListener('input', renderUI);
+  previewBandInput.addEventListener('input', renderUI);
+  if (partLyricsInput) partLyricsInput.addEventListener('input', renderUI);
+  if (partBandInput) partBandInput.addEventListener('input', renderUI);
 
   document.getElementById('btnPushLive').addEventListener('click', () => {
     broadcastState({
@@ -109,6 +134,7 @@ if (previewMainInput && previewBandInput) {
           songTitleInput.value = query;
           partLyricsInput.value = data.lyrics;
           partBandInput.value = data.lyrics;
+          renderUI();
           alert('Lyrics loaded to Song Builder!');
         });
         searchResults.appendChild(item);
@@ -130,6 +156,7 @@ if (previewMainInput && previewBandInput) {
     currentSongParts.push({ type, lyrics, bandNotes });
     partLyricsInput.value = '';
     partBandInput.value = '';
+    renderUI();
     renderTriggers(currentSongParts);
   });
 
@@ -166,6 +193,7 @@ if (previewMainInput && previewBandInput) {
       btn.addEventListener('click', () => {
         previewMainInput.value = part.lyrics;
         previewBandInput.value = part.bandNotes || part.lyrics;
+        renderUI();
       });
       songPartTriggers.appendChild(btn);
     });
@@ -174,5 +202,4 @@ if (previewMainInput && previewBandInput) {
   renderSongList();
 }
 
-// Initial render call across all pages
 renderUI();
