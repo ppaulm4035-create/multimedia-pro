@@ -49,7 +49,6 @@ function updateApp() {
     }
 
     livePreviewBox.textContent = displayContent;
-    // Portrait preview muna ay sumasalamin din sa text habang wala pang sariling function
     if (portraitPreviewBox && appState.status === 'SHOW') {
         portraitPreviewBox.textContent = currentText || 'Portrait Screen';
     } else if (portraitPreviewBox) {
