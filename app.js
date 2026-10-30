@@ -1,17 +1,21 @@
-const STATE_KEY = 'multimedia_tv_state';
+const STATE_KEY = 'multimedia_studio_state';
 
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
-    content: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta\nSa pag-ibig Mo,\npalaging ligtas ang puso",
-    status: 'SHOW'
+    editingContent: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta",
+    liveContent: "Sa 'Yong biyaya, ako\nay namamangha\nSa 'Yong kalinga,\npanganib ay 'di banta",
+    isLive: true,
+    status: 'SHOW' // 'SHOW', 'CLEAR', 'BLACK'
 };
 
 const centerEditor = document.getElementById('centerEditor');
+const livePreviewBox = document.getElementById('livePreviewBox');
+const btnGoLive = document.getElementById('btnGoLive');
 const btnClear = document.getElementById('btnClear');
 const btnBlack = document.getElementById('btnBlack');
 
-function getEditorContent() {
-    if (!centerEditor) return '';
-    return centerEditor.innerHTML
+function getEditorContent(el) {
+    if (!el) return '';
+    return el.innerHTML
         .replace(/<div><br><\/div>/gi, '\n')
         .replace(/<div>/gi, '\n')
         .replace(/<\/div>/gi, '')
@@ -19,36 +23,65 @@ function getEditorContent() {
         .replace(/&nbsp;/g, ' ');
 }
 
-function setEditorContent(text) {
-    if (!centerEditor) return;
-    centerEditor.innerHTML = text.replace(/\n/g, '<br>');
+function setContent(el, text) {
+    if (!el) return;
+    el.innerHTML = text.replace(/\n/g, '<br>');
 }
 
 function updateApp() {
-    if (appState.status === 'CLEAR' || appState.status === 'BLACK') {
-        if (appState.status === 'CLEAR') {
-            centerEditor.innerHTML = '';
-        } else if (appState.status === 'BLACK') {
-            centerEditor.style.color = 'transparent';
-        }
-    } else {
-        centerEditor.style.color = 'white';
+    // 1. Keep track of what's typed in the editing workspace
+    appState.editingContent = getEditorContent(centerEditor);
+
+    // 2. Determine what displays on the live monitor based on live state / blackout / clear
+    let displayOutput = appState.liveContent;
+    if (appState.status === 'CLEAR') {
+        displayOutput = '';
+    } else if (appState.status === 'BLACK') {
+        displayOutput = '';
+        livePreviewBox.style.backgroundColor = '#000';
     }
 
-    appState.content = getEditorContent();
+    setContent(livePreviewBox, displayOutput);
+
+    if (appState.status === 'BLACK') {
+        livePreviewBox.style.color = 'transparent';
+    } else {
+        livePreviewBox.style.color = 'white';
+        livePreviewBox.style.backgroundColor = 'transparent';
+    }
+
+    // Update GO LIVE button visual status
+    if (appState.isLive) {
+        btnGoLive.classList.add('live-active');
+        btnGoLive.textContent = '🟢 LIVE (PUSHED)';
+    } else {
+        btnGoLive.classList.remove('live-active');
+        btnGoLive.textContent = '🔴 GO LIVE (PUSH)';
+    }
+
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
 }
 
+// User types in center editor (Does NOT push to live monitor automatically)
 if (centerEditor) {
     centerEditor.addEventListener('input', () => {
-        appState.status = 'SHOW';
-        updateApp();
+        // Just saves local workspace state
+        appState.editingContent = getEditorContent(centerEditor);
+        localStorage.setItem(STATE_KEY, JSON.stringify(appState));
     });
 }
 
+// GO LIVE BUTTON: Pushes the editing screen content out to the Live Monitor
+btnGoLive?.addEventListener('click', () => {
+    appState.liveContent = getEditorContent(centerEditor);
+    appState.status = 'SHOW';
+    appState.isLive = true;
+    updateApp();
+});
+
 btnClear?.addEventListener('click', () => {
     appState.status = 'CLEAR';
-    centerEditor.innerHTML = '';
+    appState.liveContent = '';
     updateApp();
 });
 
@@ -58,7 +91,8 @@ btnBlack?.addEventListener('click', () => {
 });
 
 function init() {
-    setEditorContent(appState.content);
+    setContent(centerEditor, appState.editingContent);
+    setContent(livePreviewBox, appState.liveContent);
     updateApp();
 }
 
