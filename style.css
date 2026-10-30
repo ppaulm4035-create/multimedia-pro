@@ -1,283 +1,72 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Update the main workspace to be a 3-column row layout */
+.workspace {
+    display: flex;
+    flex: 1;
+    gap: 16px;
+    min-height: 0;
 }
 
-body {
-  background-color: #121212;
-  color: #e0e0e0;
-  height: 100vh;
-  overflow: hidden;
+/* 1. Left Sidebar: Templates */
+.templates-sidebar {
+    flex: 1.2;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 100%;
 }
 
-.app-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr 280px;
-  height: 100vh;
-  gap: 12px;
-  padding: 12px;
+.template-bar-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
-/* LEFT PANEL */
-.left-panel {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
+/* 2. Center: Editing Screen */
+.editor-section {
+    flex: 3;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.slide-list-scrollable {
-  flex: 1;
-  background: #141414;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
+/* 3. Right Sidebar: Previews */
+.preview-panel {
+    flex: 1.2;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
+/* Vertical card styling for the left template panel */
 .slide-thumb {
-  background: #222;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 11px;
-  color: #fff;
-  transition: all 0.2s;
+    width: 100%;
+    min-height: 60px;
+    background: #2d2d2d;
+    border: 1px solid #4b5563;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.8rem;
+    color: #f3f4f6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
 }
 
 .slide-thumb:hover {
-  background: #0070f3;
-  border-color: #0070f3;
-}
-
-.divider {
-  border: 0;
-  border-top: 1px solid #333;
-  margin: 5px 0;
-}
-
-.side-preview-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-/* CENTER PANEL */
-.center-panel {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.studio-action-bar {
-  display: flex;
-  gap: 8px;
-}
-
-.transition-btn {
-  flex: 1;
-  background: #f59e0b;
-  color: #000;
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.transition-btn:hover {
-  background: #d97706;
-}
-
-.btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 12px;
-  text-decoration: none;
-  text-align: center;
-}
-
-.btn.primary { background: #0070f3; color: white; }
-.btn.warning { background: #f59e0b; color: black; }
-.btn.danger { background: #ef4444; color: white; }
-.btn.link { background: #2a2a2a; color: #00ffcc; border: 1px solid #00ffcc; }
-
-.section-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #888;
-  font-weight: bold;
-}
-
-.editor-container {
-  background: #141414;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-}
-
-.editor-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* UNIFORM WYSIWYG SCREEN BOXES */
-.screen-box {
-  background: #000;
-  border: 2px solid #333;
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Landscape Proportion (Live Preview) */
-.screen-box.landscape {
-  width: 100%;
-  height: 180px;
-}
-
-/* Portrait Proportion (Live Preview) */
-.screen-box.portrait {
-  width: 130px;
-  height: 220px;
-  border-color: #00ffcc;
-}
-
-/* Center Active Canvas Box (Eksaktong magkatulad na sukat para magka-ratio ang text wrapping) */
-.center-panel .screen-box.landscape {
-  width: 100%;
-  height: 180px;
-  border-color: #0070f3;
-  margin: 0 auto;
-}
-
-.center-panel .screen-box.portrait {
-  width: 130px;
-  height: 220px;
-  border-color: #00ffcc;
-  margin: 0 auto;
-}
-
-/* Identical Screen Content / Editor Engine */
-.screen-content {
-  width: 100%;
-  height: 100%;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-weight: bold;
-  font-size: 15px;
-  color: #ffffff;
-  line-height: 1.4;
-  outline: none;
-}
-
-.screen-box.portrait .screen-content {
-  font-family: monospace;
-  font-size: 12px;
-  color: #00ffcc;
-  text-align: left;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 14px;
-}
-
-/* RIGHT PANEL */
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-}
-
-.monitor-card {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-}
-
-.monitor-title {
-  font-size: 11px;
-  font-weight: bold;
-  color: #aaa;
-  text-transform: uppercase;
-  align-self: flex-start;
-}
-
-/* EXTERNAL SCREENS */
-body.display-screen, body.band-screen {
-  background-color: #000;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  padding: 20px;
-}
-
-body.band-screen {
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.projector-output {
-  color: #ffffff;
-  font-size: 4vw;
-  text-align: center;
-  white-space: pre-wrap;
-  line-height: 1.4;
-  font-weight: bold;
-}
-
-.band-output {
-  color: #00ffcc;
-  font-family: monospace;
-  font-size: 1.5vw;
-  text-align: left;
-  white-space: pre-wrap;
-  width: 100%;
-  line-height: 1.5;
+    border-color: #4f46e5;
+    background: #374151;
 }
