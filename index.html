@@ -8,13 +8,10 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Top Toolbar with Slide Management Tools -->
+        <!-- Top Toolbar (Clean & Minimal) -->
         <header class="top-toolbar">
             <h2>Multimedia Presenter</h2>
             <div class="action-buttons">
-                <button id="btnNewSlide" class="btn primary">➕ New Slide</button>
-                <button id="btnDuplicate" class="btn dark">📋 Duplicate</button>
-                <button id="btnDelete" class="btn danger">🗑️ Delete</button>
                 <button id="btnClear" class="btn warning">Clear</button>
                 <button id="btnBlack" class="btn dark">Blackout</button>
             </div>
@@ -22,7 +19,7 @@
 
         <!-- 3-Column Studio Workspace -->
         <div class="workspace">
-            <!-- Left Column: Templates -->
+            <!-- Left Column: Templates (Right-click enabled) -->
             <div class="templates-sidebar">
                 <h3>Templates</h3>
                 <div id="templateBar" class="template-list"></div>
@@ -47,6 +44,13 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- PowerPoint-style Custom Context Menu (Popup) -->
+    <div id="contextMenu" class="custom-context-menu" style="display: none;">
+        <div class="menu-item" id="ctxNew">➕ New Slide</div>
+        <div class="menu-item" id="ctxDuplicate">📋 Duplicate Slide</div>
+        <div class="menu-item delete-item" id="ctxDelete">🗑️ Delete Slide</div>
     </div>
 
     <script src="app.js"></script>
