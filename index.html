@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <!-- CENTER PANEL: Main Editing Canvas (WYSIWYG) -->
+    <!-- CENTER PANEL: Exact WYSIWYG Editing Canvas -->
     <div class="center-panel">
       <div class="panel-header">
         <h2>Studio Controller</h2>
@@ -47,9 +47,9 @@
           <button id="btnSwitchView" class="btn primary">SWITCH TO CP VIEW</button>
         </div>
         
-        <!-- Canvas Box (Proportional to Live) -->
+        <!-- WYSIWYG Canvas Box -->
         <div id="centerCanvasBox" class="screen-box landscape active-canvas">
-          <textarea id="centerEditorInput" placeholder="Type lyrics or chords here..."></textarea>
+          <div id="centerEditorInput" class="screen-content" contenteditable="true" spellcheck="false" placeholder="Type text here..."></div>
         </div>
       </div>
     </div>
