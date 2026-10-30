@@ -1,5 +1,5 @@
-const STATE_KEY = 'multimedia_app_state';
-const TEMPLATES_KEY = 'multimedia_app_templates';
+const STATE_KEY = 'multimedia_main_state';
+const TEMPLATES_KEY = 'multimedia_main_templates';
 
 let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
     activeSlideIndex: 0,
@@ -8,7 +8,7 @@ let appState = JSON.parse(localStorage.getItem(STATE_KEY)) || {
 
 let templates = JSON.parse(localStorage.getItem(TEMPLATES_KEY)) || [
     { id: 1, title: 'Slide 1', content: 'Welcome to the Presentation' },
-    { id: 2, title: 'Slide 2', content: 'Here is your second point or lyric.' },
+    { id: 2, title: 'Slide 2', content: 'Here is your second point.' },
     { id: 3, title: 'Slide 3', content: 'Thank you for watching!' }
 ];
 
@@ -34,22 +34,28 @@ function setEditorContent(text) {
     centerEditor.innerHTML = text.replace(/\n/g, '<br>');
 }
 
+// Update everything directly from the Editing Screen (The Main source)
 function updateApp() {
+    const currentText = getEditorContent();
+
+    // 1. Save to active template
     if (templates[appState.activeSlideIndex]) {
-        templates[appState.activeSlideIndex].content = getEditorContent();
+        templates[appState.activeSlideIndex].content = currentText;
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
     }
 
-    let displayContent = templates[appState.activeSlideIndex]?.content || '';
+    // 2. Determine output for live monitor
+    let displayContent = currentText;
     if (appState.status === 'CLEAR' || appState.status === 'BLACK') {
         displayContent = '';
     }
 
+    // 3. Mirror onto Live Monitor
     if (livePreviewBox) {
         livePreviewBox.textContent = displayContent;
     }
 
-    // Update left thumbnail preview text instantly
+    // 4. Mirror onto Template Thumbnails
     renderTemplates();
 
     localStorage.setItem(STATE_KEY, JSON.stringify(appState));
@@ -63,13 +69,14 @@ function renderTemplates() {
         const card = document.createElement('div');
         card.className = `slide-thumb ${index === appState.activeSlideIndex ? 'active' : ''}`;
         
-        // Show slide title and a mini preview of the content inside the thumbnail
-        card.innerHTML = `<strong>Slide ${index + 1}</strong><div style="font-size: 0.5rem; opacity: 0.8; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${tpl.content}</div>`;
+        // Mirror the exact content of the slide directly
+        card.textContent = tpl.content;
 
         card.addEventListener('click', () => {
             appState.activeSlideIndex = index;
             appState.status = 'SHOW';
             setEditorContent(tpl.content);
+            renderTemplates();
             updateApp();
         });
 
