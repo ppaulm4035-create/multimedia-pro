@@ -53,7 +53,7 @@ body {
     min-height: 0;
 }
 
-/* Left Sidebar: Slide / Template Thumbnails */
+/* Left Sidebar: Slide Thumbnails */
 .templates-sidebar {
     flex: 1.2;
     background: #1e1e1e;
@@ -72,21 +72,20 @@ body {
     padding-right: 4px;
 }
 
-/* Miniature 16:9 Slide Cards */
 .slide-thumb {
     width: 100%;
-    aspect-ratio: 16 / 9; /* Matches the PowerPoint widescreen shape */
+    aspect-ratio: 16 / 9;
     background: #000;
     border: 2px solid #4b5563;
     border-radius: 6px;
-    padding: 8px;
-    font-size: 0.65rem;
+    padding: 12px;
+    font-size: 0.7rem;
     color: #f3f4f6;
     cursor: pointer;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     overflow: hidden;
     word-break: break-word;
     transition: all 0.2s;
@@ -125,7 +124,7 @@ body {
     border-radius: 6px;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 24px;
     overflow-y: auto;
     aspect-ratio: 16 / 9;
     max-height: 65vh;
@@ -145,7 +144,7 @@ body {
     overflow-y: auto;
 }
 
-/* Right Column: Live Monitor Preview */
+/* Right Column: Live Monitor Preview (Mirrored styling) */
 .preview-panel {
     flex: 1.2;
     background: #1e1e1e;
@@ -164,15 +163,19 @@ body {
     color: #9ca3af;
 }
 
-.preview-box {
+.preview-screen {
     background: #000;
-    border: 1px solid #374151;
+    border: 2px solid #374151;
     border-radius: 6px;
     aspect-ratio: 16 / 9;
-    padding: 12px;
-    font-size: 0.9rem;
+    padding: 24px; /* Matches canvas-box padding exactly */
+    font-size: 1.8rem; /* Matches editor-input font-size exactly */
     color: white;
     overflow: hidden;
     white-space: pre-wrap;
     word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
